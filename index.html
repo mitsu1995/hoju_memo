@@ -194,6 +194,18 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .dialog-btn.primary{background:var(--accent);color:#fff;}
 .dialog-btn.secondary{background:var(--bg2);color:var(--text);}
 .dialog-btn.danger{background:var(--danger-light);color:var(--danger);}
+
+/* Emoji picker */
+.emoji-section{margin-bottom:14px;}
+.emoji-section-label{font-size:12px;color:var(--text3);font-weight:500;margin-bottom:8px;}
+.emoji-grid{display:flex;flex-wrap:wrap;gap:6px;}
+.emoji-btn{width:44px;height:44px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg2);font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.1s,background 0.1s;}
+.emoji-btn:active{transform:scale(0.88);background:var(--accent-light);}
+.emoji-btn.selected{border-color:var(--accent);background:var(--accent-light);}
+.emoji-input-row{display:flex;gap:8px;align-items:center;margin-top:10px;}
+.emoji-input-row input{flex:1;padding:10px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:20px;font-family:inherit;outline:none;text-align:center;}
+.emoji-input-row input:focus{border-color:var(--accent);}
+.emoji-apply-btn{padding:10px 16px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -299,6 +311,28 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
     <button class="close-btn" onclick="closeImgSheet()">✕</button>
   </div>
   <div class="sheet-body">
+    <div class="img-option" onclick="toggleEmojiPicker()">
+      <span class="img-option-icon">😊</span>
+      <div><div class="img-option-text">絵文字を選ぶ</div><div class="img-option-sub">絵文字をアイコンとして使う</div></div>
+    </div>
+    <div id="emoji-picker-area" style="display:none;padding:4px 0 8px;">
+      <div class="emoji-section">
+        <div class="emoji-section-label">食品・調味料</div>
+        <div class="emoji-grid" id="emoji-grid-food"></div>
+      </div>
+      <div class="emoji-section">
+        <div class="emoji-section-label">日用品・衛生</div>
+        <div class="emoji-grid" id="emoji-grid-daily"></div>
+      </div>
+      <div class="emoji-section">
+        <div class="emoji-section-label">掃除・その他</div>
+        <div class="emoji-grid" id="emoji-grid-clean"></div>
+      </div>
+      <div class="emoji-input-row">
+        <input type="text" id="emoji-custom-input" placeholder="✍️ 直接入力" maxlength="2">
+        <button class="emoji-apply-btn" onclick="applyCustomEmoji()">使う</button>
+      </div>
+    </div>
     <div class="img-option" onclick="chooseFromCamera()">
       <span class="img-option-icon">📸</span>
       <div><div class="img-option-text">カメラで撮影</div><div class="img-option-sub">商品を直接撮る</div></div>
@@ -520,7 +554,11 @@ function renderItems(){
   document.getElementById('items-list').innerHTML=sorted.map((item,idx)=>{
     const{cycle,since,progress,status,nextDate,stock}=calcItem(item);
     const lastStr=item.purchases.length?new Date([...item.purchases].sort().pop()).toLocaleDateString('ja-JP',{month:'short',day:'numeric'}):'—';
-    const imgHtml=item.img?`<img src="${item.img}" alt="${item.name}" onerror="this.parentElement.innerHTML='${catEmoji(item.cat)}'"/>`:catEmoji(item.cat);
+    const imgHtml=item.img
+      ? (item.img.startsWith('emoji:')
+          ? `<span style="font-size:32px">${item.img.slice(6)}</span>`
+          : `<img src="${item.img}" alt="${item.name}" onerror="this.parentElement.innerHTML='${catEmoji(item.cat)}'"/>`)
+      : catEmoji(item.cat);
     return`<div class="item-card ${status}" style="animation-delay:${idx*0.04}s" data-id="${item.id}">
       <div class="card-inner">
         <div class="card-img" onclick="openImgEdit(${item.id})">${imgHtml}</div>
@@ -799,9 +837,55 @@ function applyImageNoSave(src){
 }
 
 function applyImage(src){
-  // URLの場合のみ保存
-  if(editingImgId){const item=data.find(d=>d.id===editingImgId);if(item){item.img=src;save();renderItems();}closeImgSheet();showToast('✓ 画像を更新しました');}
-  else{pendingImgData=src;document.getElementById('add-img-preview').innerHTML=`<img src="${src}" alt="preview" style="width:100%;height:100%;object-fit:cover">`;closeImgSheet();showToast('✓ 画像を設定しました');}
+  const isEmoji = src.startsWith('emoji:');
+  const previewHtml = isEmoji
+    ? `<span style="font-size:48px">${src.slice(6)}</span>`
+    : `<img src="${src}" alt="preview" style="width:100%;height:100%;object-fit:cover">`;
+  if(editingImgId){
+    const item=data.find(d=>d.id===editingImgId);
+    if(item){item.img=src;save();renderItems();}
+    closeImgSheet();showToast(isEmoji?'✓ 絵文字を設定しました':'✓ 画像を更新しました');
+  } else {
+    pendingImgData=src;
+    document.getElementById('add-img-preview').innerHTML=previewHtml;
+    closeImgSheet();showToast(isEmoji?'✓ 絵文字を設定しました':'✓ 画像を設定しました');
+  }
+}
+
+// ===== EMOJI PICKER =====
+const EMOJI_SETS = {
+  food: ['🍚','🍜','🍝','🍣','🍱','🥚','🧀','🥛','🍞','🥩','🐟','🥦','🧅','🧄','🫙','🍶','🍺','🥤','🫖','☕','🧃','🍯','🥫','🫒','🧆','🥗','🍎','🍌','🍋','🍊'],
+  daily: ['🧴','🪥','🧼','🚿','🛁','💊','🩺','🪒','🧻','🩹','💉','🧸','🪣','🧺','🪴','🕯️','🔋','💡','🪞','🛒'],
+  clean: ['🧹','🧽','🫧','🪣','🧤','🧯','🪟','🚪','🗑️','📦','🪜','🔧','🔑','🏠','🛋️','🪑','🛏️','🪴','📋','✂️'],
+};
+
+function toggleEmojiPicker() {
+  const area = document.getElementById('emoji-picker-area');
+  const isOpen = area.style.display !== 'none';
+  area.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) renderEmojiGrids();
+}
+
+function renderEmojiGrids() {
+  ['food','daily','clean'].forEach(key => {
+    const grid = document.getElementById('emoji-grid-' + key);
+    grid.innerHTML = EMOJI_SETS[key].map(e =>
+      `<button class="emoji-btn" onclick="applyEmoji('${e}')">${e}</button>`
+    ).join('');
+  });
+}
+
+function applyEmoji(emoji) {
+  // Store emoji as special "emoji:" prefix so we know it's not a URL
+  applyImage('emoji:' + emoji);
+  document.getElementById('emoji-picker-area').style.display = 'none';
+}
+
+function applyCustomEmoji() {
+  const val = document.getElementById('emoji-custom-input').value.trim();
+  if (!val) { showToast('⚠ 絵文字を入力してください'); return; }
+  applyEmoji(val);
+  document.getElementById('emoji-custom-input').value = '';
 }
 
 // ===== OCR =====
