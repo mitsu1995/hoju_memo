@@ -8,7 +8,6 @@
   "theme_color": "#1a1a1a",
   "orientation": "portrait",
   "lang": "ja",
-{
   "icons": [
     {
       "src": "icon-192.png",
@@ -19,9 +18,7 @@
       "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
-    }
-  ]
-}
+    },
     {
       "src": "icons/icon-512.png",
       "sizes": "512x512",
