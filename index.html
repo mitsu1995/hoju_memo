@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="補充メモ">
@@ -29,7 +29,7 @@
 }}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;max-width:430px;margin:0 auto;overscroll-behavior:none;font-weight:400;}
-.app{display:flex;flex-direction:column;min-height:100dvh;}
+.app{display:flex;flex-direction:column;min-height:100dvh;min-height:-webkit-fill-available;}
 .topbar{position:sticky;top:0;z-index:100;padding:calc(var(--safe-top) + 16px) 20px 12px;border-bottom:1px solid var(--border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:color-mix(in srgb,var(--bg) 88%,transparent);}
 .topbar-inner{display:flex;align-items:center;justify-content:space-between;}
 .topbar h1{font-size:22px;font-weight:400;letter-spacing:-0.5px;}
@@ -38,7 +38,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .icon-btn{width:38px;height:38px;border-radius:50%;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:transform 0.15s;}
 .icon-btn:active{transform:scale(0.92);}
 .icon-btn.shop-mode-active{background:var(--accent);border-color:var(--accent);font-size:16px;}
-.content{flex:1;padding:16px 16px calc(80px + var(--safe-bottom));overflow-y:auto;}
+.content{flex:1;padding:16px 16px calc(80px + var(--safe-bottom));overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;}
 .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;}
 .sum-card{border-radius:var(--radius-sm);padding:10px 12px;border:none;text-align:center;}
 .sum-num{font-size:22px;font-weight:400;color:#2c2a27;}
@@ -175,11 +175,11 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .ctx-overlay{position:fixed;inset:0;z-index:399;}
 
 /* Shop mode */
-.shop-memo-area{padding:0 0 12px;}
-.shop-memo-input-row{display:flex;gap:8px;margin-bottom:10px;}
-.shop-memo-input-row input{flex:1;padding:10px 14px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:15px;font-family:inherit;outline:none;}
+.shop-memo-area{padding:0 0 12px;width:100%;overflow:hidden;}
+.shop-memo-input-row{display:flex;gap:8px;margin-bottom:10px;width:100%;}
+.shop-memo-input-row input{flex:1;min-width:0;padding:10px 14px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:15px;font-family:inherit;outline:none;-webkit-appearance:none;}
 .shop-memo-input-row input:focus{border-color:var(--accent);}
-.shop-memo-add-btn{width:40px;height:40px;border-radius:50%;background:#febc2b;border:none;font-size:22px;color:var(--text);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:inherit;}
+.shop-memo-add-btn{width:44px;height:44px;border-radius:50%;background:#febc2b;border:none;font-size:22px;color:var(--text);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:inherit;-webkit-tap-highlight-color:transparent;}
 .shop-section-label{font-size:11px;color:var(--text3);font-weight:400;margin:12px 0 6px;padding:0 2px;letter-spacing:0.03em;}
 .shop-memo-item{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:6px;}
 .shop-memo-item.checked{opacity:0.4;}
@@ -701,8 +701,7 @@ function shareToLine(){
     lines.push('✏️ 今日だけ買うもの');
     pendingMemos.forEach(m=>lines.push('・'+m.name));
   }
-  const dateStr=today.toLocaleDateString('ja-JP',{month:'long',day:'numeric'});
-  const text='🛒 かいものメモ\n'+lines.join('\n')+'\n\n'+dateStr;
+  const text='🛒 かいものメモ\n'+lines.join('\n')+'\n\nhttps://mitsu1995.github.io/hoju_memo/';
   const url='https://line.me/R/msg/text/?'+encodeURIComponent(text);
   window.open(url,'_blank');
 }
@@ -730,8 +729,7 @@ function renderShopMode(sorted){
   // Memo input
   html+=`<div class="shop-memo-area">
     <div class="shop-memo-input-row">
-      <input type="text" id="memo-input" placeholder="今日買うものを追加... 例：豚バラ 200g" autocomplete="off"
-        onkeydown="if(event.key==='Enter')addMemoItem()">
+      <input type="text" id="memo-input" placeholder="今日買うものを追加..." autocomplete="off" onkeydown="if(event.key==='Enter')addMemoItem()">
       <button class="shop-memo-add-btn" onclick="addMemoItem()">＋</button>
     </div>
   </div>`;
