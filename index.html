@@ -175,6 +175,19 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .ctx-overlay{position:fixed;inset:0;z-index:399;}
 
 /* Shop mode */
+.shop-memo-area{padding:0 0 12px;}
+.shop-memo-input-row{display:flex;gap:8px;margin-bottom:10px;}
+.shop-memo-input-row input{flex:1;padding:10px 14px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:15px;font-family:inherit;outline:none;}
+.shop-memo-input-row input:focus{border-color:var(--accent);}
+.shop-memo-add-btn{width:40px;height:40px;border-radius:50%;background:#febc2b;border:none;font-size:22px;color:var(--text);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:inherit;}
+.shop-section-label{font-size:11px;color:var(--text3);font-weight:400;margin:12px 0 6px;padding:0 2px;letter-spacing:0.03em;}
+.shop-memo-item{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:6px;}
+.shop-memo-item.checked{opacity:0.4;}
+.shop-memo-check{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all 0.15s;background:none;font-size:12px;color:transparent;}
+.shop-memo-check.done{background:#febc2b;border-color:#febc2b;color:var(--text);}
+.shop-memo-name{flex:1;font-size:15px;color:var(--text);font-weight:400;}
+.shop-memo-del{background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer;padding:4px;line-height:1;}
+
 .shop-banner{background:var(--accent);color:#fff;padding:10px 16px;border-radius:var(--radius-sm);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:500;}
 .shop-banner button{background:rgba(255,255,255,0.25);border:none;color:#fff;padding:5px 12px;border-radius:100px;font-size:12px;cursor:pointer;font-family:inherit;}
 .shop-item{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;gap:14px;animation:slideIn 0.2s ease both;}
@@ -501,6 +514,7 @@ let data=[];
 let activeFilter='すべて';
 let shopMode=false;
 let shopChecked=new Set();
+let memoItems=[];
 
 async function loadData(){
   showToast('📡 データを読み込み中…');
@@ -667,9 +681,36 @@ function addLongPressHandlers(){
 }
 
 // ===== SHOP MODE =====
+function shareToLine(){
+  const filtered=activeFilter==='すべて'?data:data.filter(d=>d.cat===activeFilter);
+  const sorted=[...filtered].sort((a,b)=>{const o={now:0,soon:1,ok:2};return o[calcItem(a).status]-o[calcItem(b).status];});
+  const needItems=sorted.filter(item=>calcItem(item).status!=='ok'||item.stock===0);
+  const pendingMemos=memoItems.filter(m=>!m.done);
+  if(!needItems.length&&!pendingMemos.length){showToast('リストが空です');return;}
+  const statusMark={now:'🔴',soon:'🟡',ok:'🟢'};
+  let lines=[];
+  if(needItems.length){
+    lines.push('📦 補充リスト');
+    needItems.forEach(item=>{
+      const{status,stock}=calcItem(item);
+      lines.push(statusMark[status]+' '+item.name+'（ストック×'+stock+'）');
+    });
+  }
+  if(pendingMemos.length){
+    if(lines.length)lines.push('');
+    lines.push('✏️ 今日だけ買うもの');
+    pendingMemos.forEach(m=>lines.push('・'+m.name));
+  }
+  const dateStr=today.toLocaleDateString('ja-JP',{month:'long',day:'numeric'});
+  const text='🛒 かいものメモ\n'+lines.join('\n')+'\n\n'+dateStr;
+  const url='https://line.me/R/msg/text/?'+encodeURIComponent(text);
+  window.open(url,'_blank');
+}
+
 function toggleShopMode(){
   shopMode=!shopMode;
   shopChecked=new Set();
+  if(!shopMode)memoItems=[];
   const btn=document.getElementById('shop-mode-btn');
   if(shopMode){btn.classList.add('shop-mode-active');btn.title='通常モードに戻る';}
   else{btn.classList.remove('shop-mode-active');btn.title='買い物モード';}
@@ -681,11 +722,24 @@ function toggleShopMode(){
 function renderShopMode(sorted){
   const needItems=sorted.filter(item=>calcItem(item).status!=='ok'||item.stock===0);
   const listEl=document.getElementById('items-list');
-  if(!needItems.length){
-    listEl.innerHTML='<div class="empty">補充が必要なアイテムはありません 🎉</div>';return;
-  }
-  listEl.innerHTML=`<div class="shop-banner">🛍️ 買い物モード — ${needItems.length}品<button onclick="toggleShopMode()">終了</button></div>`
-    +needItems.map((item,idx)=>{
+  const totalCount=needItems.length+memoItems.filter(m=>!m.done).length;
+
+  // Banner
+  let html=`<div class="shop-banner">🛒 買い物モード — ${totalCount}品<div style="display:flex;gap:6px;"><button onclick="shareToLine()" style="background:rgba(255,255,255,0.25);border:none;color:#fff;padding:5px 10px;border-radius:100px;font-size:12px;cursor:pointer;font-family:inherit;">LINEで送る</button><button onclick="toggleShopMode()" style="background:rgba(255,255,255,0.25);border:none;color:#fff;padding:5px 10px;border-radius:100px;font-size:12px;cursor:pointer;font-family:inherit;">終了</button></div></div>`;
+
+  // Memo input
+  html+=`<div class="shop-memo-area">
+    <div class="shop-memo-input-row">
+      <input type="text" id="memo-input" placeholder="今日買うものを追加... 例：豚バラ 200g" autocomplete="off"
+        onkeydown="if(event.key==='Enter')addMemoItem()">
+      <button class="shop-memo-add-btn" onclick="addMemoItem()">＋</button>
+    </div>
+  </div>`;
+
+  // Supplement section
+  if(needItems.length){
+    html+=`<div class="shop-section-label">📦 補充リスト</div>`;
+    html+=needItems.map((item,idx)=>{
       const{status,stock}=calcItem(item);
       const done=shopChecked.has(item.id);
       return`<div class="shop-item${done?' checked':''}" style="animation-delay:${idx*0.05}s">
@@ -697,6 +751,45 @@ function renderShopMode(sorted){
         <button class="buy-btn" onclick="quickBuy(${item.id});toggleShopCheck(${item.id})">買った ✓</button>
       </div>`;
     }).join('');
+  }
+
+  // Memo section
+  if(memoItems.length){
+    html+=`<div class="shop-section-label">✏️ 今日だけ買うもの</div>`;
+    html+=memoItems.map((m,i)=>`
+      <div class="shop-memo-item${m.done?' checked':''}">
+        <div class="shop-memo-check${m.done?' done':''}" onclick="toggleMemoCheck(${i})">${m.done?'✓':''}</div>
+        <div class="shop-memo-name">${m.name}</div>
+        <button class="shop-memo-del" onclick="deleteMemoItem(${i})">✕</button>
+      </div>`).join('');
+  }
+
+  if(!needItems.length&&!memoItems.length){
+    html+='<div class="empty">補充が必要なアイテムはありません 🎉<br><span style="font-size:13px;color:var(--text3)">上の入力欄から今日買うものを追加できます</span></div>';
+  }
+
+  listEl.innerHTML=html;
+}
+
+function addMemoItem(){
+  const input=document.getElementById('memo-input');
+  if(!input)return;
+  const name=input.value.trim();
+  if(!name){showToast('⚠ 内容を入力してください');return;}
+  memoItems.push({name,done:false});
+  input.value='';
+  renderItems();
+  setTimeout(()=>{const el=document.getElementById('memo-input');if(el)el.focus();},100);
+}
+
+function toggleMemoCheck(i){
+  if(memoItems[i])memoItems[i].done=!memoItems[i].done;
+  renderItems();
+}
+
+function deleteMemoItem(i){
+  memoItems.splice(i,1);
+  renderItems();
 }
 
 function toggleShopCheck(id){
