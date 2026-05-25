@@ -10,6 +10,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>補充メモ</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -486,12 +487,66 @@ function updateOcrHint(){
   else{el.innerHTML='APIキーが未設定です。<a href="#" onclick="openSettings();return false;" style="color:var(--accent)">設定</a>から登録してください。';el.style.color='var(--warn)';}
 }
 
+// ===== SUPABASE =====
+const SUPABASE_URL='https://ekmcyybjdiqjxvhebibt.supabase.co';
+const SUPABASE_KEY='sb_publishable_q2a6PJx9Y3s0zsbGbAwseQ_y9z6Xd0N';
+const USER_ID='shared'; // 家族で共有する固定ID
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
 // ===== DATA =====
-function loadData(){
-  try{const r=localStorage.getItem(STORAGE_KEY);return r?JSON.parse(r):getSample();}
-  catch(e){return getSample();}
+let data=[];
+let activeFilter='すべて';
+let shopMode=false;
+let shopChecked=new Set();
+
+async function loadData(){
+  showToast('📡 データを読み込み中…');
+  const{data:rows,error}=await sb.from('items').select('*').eq('user_id',USER_ID).order('created_at');
+  if(error){
+    console.error(error);
+    showToast('⚠ 読み込みに失敗しました。ローカルデータを使用します。');
+    const r=localStorage.getItem(STORAGE_KEY);
+    data=r?JSON.parse(r):getSample();
+  } else {
+    data=rows.map(r=>({...r,purchases:r.purchases||[],img:r.img||null}));
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+    showToast('✓ データを読み込みました');
+  }
+  renderChips();renderItems();
 }
-function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}
+
+async function save(){
+  // ローカルにもバックアップ
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+}
+
+async function saveItem(item){
+  const row={
+    user_id:USER_ID,
+    name:item.name,
+    cat:item.cat,
+    purchases:item.purchases,
+    note:item.note||'',
+    stock:item.stock||0,
+    img:item.img||null,
+  };
+  if(item._isNew){
+    const{data:inserted,error}=await sb.from('items').insert(row).select().single();
+    if(error){console.error(error);showToast('⚠ 保存に失敗しました');return null;}
+    return inserted;
+  } else {
+    const{error}=await sb.from('items').update(row).eq('id',item.id).eq('user_id',USER_ID);
+    if(error){console.error(error);showToast('⚠ 保存に失敗しました');return null;}
+    return item;
+  }
+}
+
+async function deleteItem(id){
+  const{error}=await sb.from('items').delete().eq('id',id).eq('user_id',USER_ID);
+  if(error){console.error(error);showToast('⚠ 削除に失敗しました');return false;}
+  return true;
+}
+
 function getSample(){
   const ago=n=>{const d=new Date();d.setDate(d.getDate()-n);return d.toISOString().split('T')[0];};
   return[
@@ -502,10 +557,6 @@ function getSample(){
     {id:5,name:'みりん',cat:'調味料',purchases:[ago(120),ago(65)],note:'',stock:1,img:null},
   ];
 }
-let data=loadData();
-let activeFilter='すべて';
-let shopMode=false;
-let shopChecked=new Set();
 
 // ===== CALC =====
 function avgCycle(purchases){
@@ -684,13 +735,13 @@ function deleteItemConfirm(id){
   showDialog(
     `「${item.name}」を削除`,
     'このアイテムと購入履歴がすべて削除されます。元に戻せません。',
-    [{label:'削除する',cls:'danger',cb:()=>{data=data.filter(d=>d.id!==id);save();renderChips();renderItems();showToast(`🗑 ${item.name}を削除しました`);}},
+    [{label:'削除する',cls:'danger',cb:async()=>{const ok=await deleteItem(id);if(ok){data=data.filter(d=>d.id!==id);save();renderChips();renderItems();showToast(`🗑 ${item.name}を削除しました`);}}},
      {label:'キャンセル',cls:'secondary',cb:null}]
   );
 }
 
 // ===== EDIT =====
-function editItem(id){
+async function editItem(id){
   const item=data.find(d=>d.id===id);if(!item)return;
   document.getElementById('f-name').value=item.name;
   document.getElementById('f-cat').value=item.cat;
@@ -711,20 +762,22 @@ let editingItemId=null;
 function setFilter(cat){activeFilter=cat;renderChips();renderItems();}
 
 // ===== STOCK =====
-function changeStock(id,delta){
+async function changeStock(id,delta){
   const item=data.find(d=>d.id===id);if(!item)return;
-  item.stock=Math.max(0,(item.stock??0)+delta);save();renderItems();
+  item.stock=Math.max(0,(item.stock??0)+delta);
+  await saveItem(item);save();renderItems();
   showToast(delta>0?`✓ ストック +1（×${item.stock}個）`:`ストック -1（×${item.stock}個）`);
 }
-function useOne(id){
+async function useOne(id){
   const item=data.find(d=>d.id===id);if(!item)return;
-  if((item.stock??0)>1){item.stock--;save();renderItems();showToast(`📦 開封！残りストック ×${item.stock}個`);}
-  else{item.stock=0;save();renderItems();showToast(`🔴 使い切り！補充を検討してください`);}
+  if((item.stock??0)>1){item.stock--;await saveItem(item);save();renderItems();showToast(`📦 開封！残りストック ×${item.stock}個`);}
+  else{item.stock=0;await saveItem(item);save();renderItems();showToast(`🔴 使い切り！補充を検討してください`);}
 }
-function quickBuy(id){
+async function quickBuy(id){
   const item=data.find(d=>d.id===id);if(!item)return;
   item.purchases.push(today.toISOString().split('T')[0]);
-  item.stock=(item.stock??0)+1;save();renderItems();
+  item.stock=(item.stock??0)+1;
+  await saveItem(item);save();renderItems();
   showToast(`✓ ${item.name} を記録！ストック ×${item.stock}`);
 }
 
@@ -745,7 +798,7 @@ function openAdd(){
 }
 function closeAdd(){document.getElementById('overlay-add').classList.remove('open');document.getElementById('sheet-add').classList.remove('open');}
 
-function recordPurchase(){
+async function recordPurchase(){
   const name=document.getElementById('f-name').value.trim();
   const date=document.getElementById('f-date').value;
   const cat=document.getElementById('f-cat').value;
@@ -758,6 +811,7 @@ function recordPurchase(){
     if(item){
       item.name=name;item.cat=cat;item.note=note;
       if(pendingImgData!==undefined)item.img=pendingImgData;
+      await saveItem(item);
     }
     save();closeAdd();renderChips();renderItems();
     showToast(`✓ ${name} を更新しました`);
@@ -771,15 +825,17 @@ function recordPurchase(){
       `「${name}」はすでに登録されています`,
       '既存のアイテムに購入記録を追加しますか？\nそれとも別の商品として新規登録しますか？',
       [
-        {label:'既存に追加する',cls:'primary',cb:()=>{
+        {label:'既存に追加する',cls:'primary',cb:async()=>{
           existing.purchases.push(date);
           existing.stock=(existing.stock??0)+addStockVal;
           if(pendingImgData)existing.img=pendingImgData;
-          save();closeAdd();renderChips();renderItems();
+          await saveItem(existing);save();closeAdd();renderChips();renderItems();
           showToast(`✓ ${name} を記録！（×${addStockVal}個）`);
         }},
-        {label:'新規アイテムとして登録',cls:'secondary',cb:()=>{
-          data.push({id:Date.now(),name,cat,purchases:[date],note,stock:addStockVal,img:pendingImgData});
+        {label:'新規アイテムとして登録',cls:'secondary',cb:async()=>{
+          const newItem={_isNew:true,name,cat,purchases:[date],note,stock:addStockVal,img:pendingImgData};
+          const inserted=await saveItem(newItem);
+          if(inserted){data.push(inserted);}
           save();closeAdd();renderChips();renderItems();
           showToast(`✓ ${name}（新規）を登録！`);
         }},
@@ -789,7 +845,9 @@ function recordPurchase(){
     return;
   }
 
-  data.push({id:Date.now(),name,cat,purchases:[date],note,stock:addStockVal,img:pendingImgData});
+  const newItem={_isNew:true,name,cat,purchases:[date],note,stock:addStockVal,img:pendingImgData};
+  const inserted=await saveItem(newItem);
+  if(inserted){data.push(inserted);}
   save();closeAdd();renderChips();renderItems();
   showToast(`✓ ${name} を記録！（×${addStockVal}個）`);
 }
@@ -836,14 +894,14 @@ function applyImageNoSave(src){
     closeImgSheet();showToast('画像を設定しました（このセッションのみ）');}
 }
 
-function applyImage(src){
+async function applyImage(src){
   const isEmoji = src.startsWith('emoji:');
   const previewHtml = isEmoji
     ? `<span style="font-size:48px">${src.slice(6)}</span>`
     : `<img src="${src}" alt="preview" style="width:100%;height:100%;object-fit:cover">`;
   if(editingImgId){
     const item=data.find(d=>d.id===editingImgId);
-    if(item){item.img=src;save();renderItems();}
+    if(item){item.img=src;await saveItem(item);save();renderItems();}
     closeImgSheet();showToast(isEmoji?'✓ 絵文字を設定しました':'✓ 画像を更新しました');
   } else {
     pendingImgData=src;
@@ -991,7 +1049,7 @@ function showOcrResults(parsed){
   document.getElementById('ocr-step3').style.display='';
 }
 
-function registerOcrItems(){
+async function registerOcrItems(){
   const date=document.getElementById('ocr-date').value;
   const items=JSON.parse(document.getElementById('ocr-results').dataset.items||'[]');
   let count=0;
@@ -1018,6 +1076,8 @@ function registerOcrItems(){
 
   save();closeOcr();renderChips();renderItems();
   showToast(`✓ ${count}品を登録しました！`);
+  // Supabaseに同期
+  await loadData();
 }
 
 // ===== HISTORY =====
@@ -1045,7 +1105,7 @@ function clearAllData(){
     'すべてのデータを削除',
     'アイテムと購入履歴がすべて削除されます。この操作は元に戻せません。',
     [
-      {label:'削除する',cls:'danger',cb:()=>{localStorage.removeItem(STORAGE_KEY);data=getSample();save();renderChips();renderItems();closeSettings();showToast('データを削除しました');}},
+      {label:'削除する',cls:'danger',cb:async()=>{await sb.from('items').delete().eq('user_id',USER_ID);localStorage.removeItem(STORAGE_KEY);data=[];renderChips();renderItems();closeSettings();showToast('データを削除しました');}},
       {label:'キャンセル',cls:'secondary',cb:null}
     ]
   );
@@ -1076,7 +1136,7 @@ function showToast(msg){
 function setView(v){}
 
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-renderChips();renderItems();
+loadData();
 </script>
 </body>
 </html>
