@@ -14,258 +14,150 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f5f3ee;
-  --bg2: #edeae3;
-  --card: #ffffff;
-  --text: #1a1a1a;
-  --text2: #6b6760;
-  --text3: #a8a49e;
-  --border: rgba(0,0,0,0.08);
-  --accent: #2d5a3d;
-  --accent-light: #e8f0ea;
-  --warn: #8a4a00;
-  --warn-light: #fef3e2;
-  --danger: #8b2020;
-  --danger-light: #fdeaea;
-  --safe: #1a6b3a;
-  --safe-light: #e6f4eb;
-  --radius: 16px;
-  --radius-sm: 10px;
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --bg:#f5f3ee;--bg2:#edeae3;--card:#ffffff;--text:#1a1a1a;--text2:#6b6760;--text3:#a8a49e;
+  --border:rgba(0,0,0,0.08);--accent:#2d5a3d;--accent-light:#e8f0ea;
+  --warn:#8a4a00;--warn-light:#fef3e2;--danger:#8b2020;--danger-light:#fdeaea;
+  --safe:#1a6b3a;--safe-light:#e6f4eb;--radius:16px;--radius-sm:10px;
+  --safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #141412;
-    --bg2: #1e1d1a;
-    --card: #242320;
-    --text: #f0ede6;
-    --text2: #9b9690;
-    --text3: #5c5a56;
-    --border: rgba(255,255,255,0.08);
-    --accent: #5a9e6e;
-    --accent-light: #1a2e20;
-    --warn: #d4a04a;
-    --warn-light: #2a2010;
-    --danger: #e06060;
-    --danger-light: #2a1414;
-    --safe: #5aae74;
-    --safe-light: #142014;
-  }
-}
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-body {
-  font-family: 'Noto Sans JP', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100dvh;
-  max-width: 430px;
-  margin: 0 auto;
-  overscroll-behavior: none;
-}
-.app {
-  display: flex;
-  flex-direction: column;
-  min-height: 100dvh;
-}
-.topbar {
-  position: sticky; top: 0; z-index: 100;
-  background: var(--bg);
-  padding: calc(var(--safe-top) + 16px) 20px 12px;
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  background: color-mix(in srgb, var(--bg) 85%, transparent);
-}
-.topbar-inner { display: flex; align-items: center; justify-content: space-between; }
-.topbar h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
-.topbar-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
-.icon-btn {
-  width: 38px; height: 38px; border-radius: 50%;
-  background: var(--card); border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 18px;
-  transition: transform 0.15s ease;
-}
-.icon-btn:active { transform: scale(0.92); }
+@media(prefers-color-scheme:dark){:root{
+  --bg:#141412;--bg2:#1e1d1a;--card:#242320;--text:#f0ede6;--text2:#9b9690;--text3:#5c5a56;
+  --border:rgba(255,255,255,0.08);--accent:#5a9e6e;--accent-light:#1a2e20;
+  --warn:#d4a04a;--warn-light:#2a2010;--danger:#e06060;--danger-light:#2a1414;
+  --safe:#5aae74;--safe-light:#142014;
+}}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;max-width:430px;margin:0 auto;overscroll-behavior:none;}
+.app{display:flex;flex-direction:column;min-height:100dvh;}
+.topbar{position:sticky;top:0;z-index:100;padding:calc(var(--safe-top) + 16px) 20px 12px;border-bottom:1px solid var(--border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:color-mix(in srgb,var(--bg) 88%,transparent);}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between;}
+.topbar h1{font-size:22px;font-weight:700;letter-spacing:-0.5px;}
+.topbar-sub{font-size:12px;color:var(--text3);margin-top:2px;}
+.topbar-actions{display:flex;gap:8px;}
+.icon-btn{width:38px;height:38px;border-radius:50%;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:transform 0.15s;}
+.icon-btn:active{transform:scale(0.92);}
+.content{flex:1;padding:16px 16px calc(80px + var(--safe-bottom));overflow-y:auto;}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;}
+.sum-card{background:var(--card);border-radius:var(--radius-sm);padding:10px 12px;border:1px solid var(--border);text-align:center;}
+.sum-num{font-size:22px;font-weight:700;}
+.sum-label{font-size:11px;color:var(--text3);margin-top:2px;}
+.sum-card.ok .sum-num{color:var(--safe);}
+.sum-card.soon .sum-num{color:var(--warn);}
+.sum-card.now .sum-num{color:var(--danger);}
+.chips{display:flex;gap:6px;overflow-x:auto;margin-bottom:16px;padding-bottom:2px;scrollbar-width:none;}
+.chips::-webkit-scrollbar{display:none;}
+.chip{flex-shrink:0;padding:5px 14px;border-radius:100px;font-size:13px;font-weight:500;background:var(--card);border:1px solid var(--border);cursor:pointer;color:var(--text2);transition:all 0.15s;}
+.chip.active{background:var(--text);color:var(--bg);border-color:var(--text);}
+.items{display:flex;flex-direction:column;gap:10px;}
+.item-card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);position:relative;overflow:hidden;animation:slideIn 0.25s ease both;}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.item-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:2px 0 0 2px;}
+.item-card.ok::before{background:var(--safe);}
+.item-card.soon::before{background:var(--warn);}
+.item-card.now::before{background:var(--danger);}
+.card-inner{display:flex;}
+.card-img{width:72px;flex-shrink:0;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;min-height:100px;}
+.card-img img{width:72px;height:100%;object-fit:cover;display:block;}
+.card-body{flex:1;padding:12px 14px;min-width:0;}
+.item-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;}
+.item-name{font-size:16px;font-weight:700;}
+.item-cat{font-size:11px;color:var(--text3);margin-top:2px;}
+.stock-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.stock-label{font-size:12px;color:var(--text2);}
+.stock-controls{display:flex;align-items:center;gap:4px;}
+.stock-btn{width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--bg2);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text);transition:transform 0.1s;font-family:inherit;line-height:1;}
+.stock-btn:active{transform:scale(0.88);}
+.stock-num{font-size:16px;font-weight:700;min-width:24px;text-align:center;}
+.stock-num.zero{color:var(--danger);}
+.open-btn{font-size:11px;padding:4px 10px;border-radius:100px;border:1px solid var(--border);background:none;color:var(--text2);cursor:pointer;font-family:inherit;margin-left:4px;}
+.open-btn:active{background:var(--bg2);}
+.buy-btn{flex-shrink:0;padding:6px 12px;border-radius:100px;font-size:12px;font-weight:500;background:var(--accent-light);color:var(--accent);border:none;cursor:pointer;transition:transform 0.15s,opacity 0.15s;font-family:inherit;}
+.buy-btn:active{transform:scale(0.92);opacity:0.8;}
+.progress-track{height:5px;background:var(--bg2);border-radius:3px;margin-bottom:8px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:3px;transition:width 0.5s cubic-bezier(0.4,0,0.2,1);}
+.ok .progress-fill{background:var(--safe);}
+.soon .progress-fill{background:var(--warn);}
+.now .progress-fill{background:var(--danger);}
+.item-meta{display:flex;gap:10px;flex-wrap:wrap;}
+.meta-item{font-size:12px;color:var(--text2);}
+.meta-item strong{font-weight:500;color:var(--text);}
+.status-pill{margin-left:auto;flex-shrink:0;font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;}
+.ok .status-pill{background:var(--safe-light);color:var(--safe);}
+.soon .status-pill{background:var(--warn-light);color:var(--warn);}
+.now .status-pill{background:var(--danger-light);color:var(--danger);}
+.bottomnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding:8px 0 calc(8px + var(--safe-bottom));z-index:100;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;padding:4px;font-family:inherit;color:var(--text3);transition:color 0.15s;}
+.nav-btn.active{color:var(--accent);}
+.nav-icon{font-size:22px;}
+.nav-label{font-size:10px;font-weight:500;}
+.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+.sheet-overlay.open{opacity:1;pointer-events:all;}
+.sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:430px;background:var(--card);border-radius:24px 24px 0 0;padding:0 0 calc(20px + var(--safe-bottom));z-index:201;transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);max-height:92dvh;display:flex;flex-direction:column;}
+.sheet.open{transform:translateX(-50%) translateY(0);}
+.sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0;flex-shrink:0;}
+.sheet-header{padding:16px 20px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.sheet-title{font-size:18px;font-weight:700;}
+.close-btn{background:var(--bg2);border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text2);font-family:inherit;}
+.sheet-body{padding:16px 20px;overflow-y:auto;flex:1;}
+.field{margin-bottom:16px;}
+.field label{font-size:13px;color:var(--text2);font-weight:500;display:block;margin-bottom:6px;}
+.field input,.field select{width:100%;padding:12px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:16px;font-family:inherit;outline:none;-webkit-appearance:none;appearance:none;transition:border-color 0.15s;}
+.field input:focus,.field select:focus{border-color:var(--accent);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.img-preview{width:100%;height:120px;border-radius:var(--radius-sm);border:1.5px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;background:var(--bg2);margin-bottom:8px;overflow:hidden;}
+.img-preview img{width:100%;height:100%;object-fit:cover;}
+.img-preview-label{font-size:13px;color:var(--text3);}
+.img-url-input{display:none;}
+.img-url-input.visible{display:block;}
+.stepper-row{display:flex;align-items:center;gap:12px;}
+.stepper{display:flex;align-items:center;gap:8px;}
+.stepper button{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--bg2);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;color:var(--text);font-family:inherit;}
+.stepper span{font-size:18px;font-weight:700;min-width:28px;text-align:center;}
+.submit-btn{width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;transition:opacity 0.15s;margin-top:4px;}
+.submit-btn:active{opacity:0.8;}
+.history-group{margin-bottom:20px;}
+.history-date-label{font-size:12px;color:var(--text3);font-weight:500;margin-bottom:8px;}
+.history-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+.history-row:last-child{border-bottom:none;}
+.h-name{font-size:15px;font-weight:500;}
+.h-cat{font-size:12px;color:var(--text3);}
+.empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:14px;}
+.toast{position:fixed;bottom:calc(80px + var(--safe-bottom) + 12px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--bg);padding:10px 20px;border-radius:100px;font-size:14px;font-weight:500;opacity:0;pointer-events:none;transition:all 0.3s;white-space:nowrap;z-index:300;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#sheet-img .sheet-body{display:flex;flex-direction:column;gap:12px;}
+.img-option{display:flex;align-items:center;gap:12px;padding:14px;border-radius:var(--radius-sm);border:1px solid var(--border);cursor:pointer;background:var(--bg2);}
+.img-option:active{opacity:0.7;}
+.img-option-icon{font-size:24px;}
+.img-option-text{font-size:15px;font-weight:500;}
+.img-option-sub{font-size:12px;color:var(--text2);margin-top:2px;}
 
-.content { flex: 1; padding: 16px 16px calc(80px + var(--safe-bottom)); overflow-y: auto; }
+/* OCR sheet */
+.ocr-drop{width:100%;min-height:140px;border-radius:var(--radius-sm);border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;background:var(--bg2);transition:border-color 0.2s;}
+.ocr-drop.has-img{border-style:solid;border-color:var(--accent);}
+.ocr-drop img{width:100%;max-height:200px;object-fit:contain;border-radius:var(--radius-sm);}
+.ocr-drop-label{font-size:14px;color:var(--text3);}
+.ocr-loading{display:none;flex-direction:column;align-items:center;gap:12px;padding:20px;}
+.ocr-loading.show{display:flex;}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ocr-results{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
+.ocr-item-row{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bg2);border-radius:var(--radius-sm);border:1px solid var(--border);}
+.ocr-item-check{width:20px;height:20px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;}
+.ocr-item-name{flex:1;font-size:14px;}
+.ocr-item-qty{width:36px;font-size:14px;font-weight:700;text-align:center;color:var(--accent);}
+.ocr-section-label{font-size:12px;color:var(--text3);font-weight:500;margin-bottom:4px;}
 
-/* Summary strip */
-.summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
-.sum-card {
-  background: var(--card); border-radius: var(--radius-sm);
-  padding: 10px 12px; border: 1px solid var(--border);
-  text-align: center;
-}
-.sum-num { font-size: 22px; font-weight: 700; }
-.sum-label { font-size: 11px; color: var(--text3); margin-top: 2px; }
-.sum-card.ok .sum-num { color: var(--safe); }
-.sum-card.soon .sum-num { color: var(--warn); }
-.sum-card.now .sum-num { color: var(--danger); }
-
-/* Filter chips */
-.chips { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 16px; padding-bottom: 2px; scrollbar-width: none; }
-.chips::-webkit-scrollbar { display: none; }
-.chip {
-  flex-shrink: 0; padding: 5px 14px; border-radius: 100px;
-  font-size: 13px; font-weight: 500;
-  background: var(--card); border: 1px solid var(--border);
-  cursor: pointer; color: var(--text2); transition: all 0.15s;
-}
-.chip.active { background: var(--text); color: var(--bg); border-color: var(--text); }
-
-/* Item cards */
-.items { display: flex; flex-direction: column; gap: 10px; }
-.item-card {
-  background: var(--card); border-radius: var(--radius);
-  border: 1px solid var(--border); padding: 14px 16px;
-  position: relative; overflow: hidden;
-  animation: slideIn 0.25s ease both;
-}
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.item-card::before {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-  width: 3px; border-radius: 2px 0 0 2px;
-}
-.item-card.ok::before { background: var(--safe); }
-.item-card.soon::before { background: var(--warn); }
-.item-card.now::before { background: var(--danger); }
-
-.item-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
-.item-name { font-size: 16px; font-weight: 700; }
-.item-cat { font-size: 11px; color: var(--text3); margin-top: 2px; }
-.buy-btn {
-  flex-shrink: 0; padding: 6px 12px; border-radius: 100px;
-  font-size: 12px; font-weight: 500;
-  background: var(--accent-light); color: var(--accent);
-  border: none; cursor: pointer;
-  transition: transform 0.15s ease, opacity 0.15s;
-  font-family: inherit;
-}
-.buy-btn:active { transform: scale(0.92); opacity: 0.8; }
-
-.progress-track {
-  height: 5px; background: var(--bg2);
-  border-radius: 3px; margin-bottom: 10px; overflow: hidden;
-}
-.progress-fill {
-  height: 100%; border-radius: 3px;
-  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
-}
-.ok .progress-fill { background: var(--safe); }
-.soon .progress-fill { background: var(--warn); }
-.now .progress-fill { background: var(--danger); }
-
-.item-meta { display: flex; gap: 12px; }
-.meta-item { font-size: 12px; color: var(--text2); }
-.meta-item strong { font-weight: 500; color: var(--text); }
-.status-pill {
-  margin-left: auto; flex-shrink: 0;
-  font-size: 11px; font-weight: 700;
-  padding: 3px 10px; border-radius: 100px; letter-spacing: 0.3px;
-}
-.ok .status-pill { background: var(--safe-light); color: var(--safe); }
-.soon .status-pill { background: var(--warn-light); color: var(--warn); }
-.now .status-pill { background: var(--danger-light); color: var(--danger); }
-
-/* Bottom nav */
-.bottomnav {
-  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-  width: 100%; max-width: 430px;
-  background: color-mix(in srgb, var(--bg) 90%, transparent);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid var(--border);
-  display: flex;
-  padding: 8px 0 calc(8px + var(--safe-bottom));
-  z-index: 100;
-}
-.nav-btn {
-  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
-  background: none; border: none; cursor: pointer; padding: 4px;
-  font-family: inherit; color: var(--text3); transition: color 0.15s;
-}
-.nav-btn.active { color: var(--accent); }
-.nav-icon { font-size: 22px; }
-.nav-label { font-size: 10px; font-weight: 500; }
-
-/* Sheet (add / history) */
-.sheet-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-  z-index: 200; opacity: 0; pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-.sheet-overlay.open { opacity: 1; pointer-events: all; }
-.sheet {
-  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%);
-  width: 100%; max-width: 430px;
-  background: var(--card); border-radius: 24px 24px 0 0;
-  padding: 0 0 calc(20px + var(--safe-bottom));
-  z-index: 201; transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
-  max-height: 90dvh; display: flex; flex-direction: column;
-}
-.sheet.open { transform: translateX(-50%) translateY(0); }
-.sheet-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 12px auto 0; flex-shrink: 0; }
-.sheet-header { padding: 16px 20px 0; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-.sheet-title { font-size: 18px; font-weight: 700; }
-.close-btn { background: var(--bg2); border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; color: var(--text2); font-family: inherit; }
-.sheet-body { padding: 16px 20px; overflow-y: auto; flex: 1; }
-
-.field { margin-bottom: 16px; }
-.field label { font-size: 13px; color: var(--text2); font-weight: 500; display: block; margin-bottom: 6px; }
-.field input, .field select {
-  width: 100%; padding: 12px 14px;
-  border-radius: var(--radius-sm); border: 1px solid var(--border);
-  background: var(--bg2); color: var(--text);
-  font-size: 16px; font-family: inherit; outline: none;
-  -webkit-appearance: none; appearance: none;
-  transition: border-color 0.15s;
-}
-.field input:focus, .field select:focus { border-color: var(--accent); }
-.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-.submit-btn {
-  width: 100%; padding: 14px;
-  background: var(--accent); color: #fff;
-  border: none; border-radius: var(--radius-sm);
-  font-size: 16px; font-weight: 700;
-  font-family: inherit; cursor: pointer;
-  transition: opacity 0.15s; margin-top: 4px;
-}
-.submit-btn:active { opacity: 0.8; }
-
-/* History */
-.history-group { margin-bottom: 20px; }
-.history-date-label { font-size: 12px; color: var(--text3); font-weight: 500; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-.history-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 0; border-bottom: 1px solid var(--border);
-}
-.history-row:last-child { border-bottom: none; }
-.h-name { font-size: 15px; font-weight: 500; }
-.h-cat { font-size: 12px; color: var(--text3); }
-.h-cycle { font-size: 12px; color: var(--text2); }
-
-.empty { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 14px; }
-
-/* Toast */
-.toast {
-  position: fixed; bottom: calc(80px + var(--safe-bottom) + 12px);
-  left: 50%; transform: translateX(-50%) translateY(20px);
-  background: var(--text); color: var(--bg);
-  padding: 10px 20px; border-radius: 100px;
-  font-size: 14px; font-weight: 500;
-  opacity: 0; pointer-events: none;
-  transition: all 0.3s ease; white-space: nowrap;
-  z-index: 300;
-}
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* Swipe delete */
-.item-card { cursor: default; user-select: none; }
+/* Settings sheet */
+.settings-section{margin-bottom:24px;}
+.settings-label{font-size:13px;color:var(--text2);font-weight:500;margin-bottom:8px;}
+.api-key-row{display:flex;gap:8px;}
+.api-key-row input{flex:1;padding:12px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:14px;font-family:'Courier New',monospace;outline:none;}
+.api-key-row input:focus{border-color:var(--accent);}
+.save-key-btn{padding:12px 16px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.key-status{font-size:12px;margin-top:6px;}
+.key-status.set{color:var(--safe);}
+.key-status.unset{color:var(--text3);}
+.danger-btn{width:100%;padding:12px;border-radius:var(--radius-sm);border:1px solid var(--danger);background:none;color:var(--danger);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;}
 </style>
 </head>
 <body>
@@ -276,7 +168,11 @@ body {
         <h1>🛒 補充メモ</h1>
         <div class="topbar-sub" id="topbar-date"></div>
       </div>
-      <button class="icon-btn" onclick="openHistory()" aria-label="履歴">📋</button>
+      <div class="topbar-actions">
+        <button class="icon-btn" onclick="openOcr()" title="レシート読み取り">🧾</button>
+        <button class="icon-btn" onclick="openHistory()" title="履歴">📋</button>
+        <button class="icon-btn" onclick="openSettings()" title="設定">⚙️</button>
+      </div>
     </div>
   </div>
 
@@ -291,17 +187,14 @@ body {
   </div>
 
   <nav class="bottomnav">
-    <button class="nav-btn active" onclick="setView('list')" id="nav-list">
-      <span class="nav-icon">📦</span>
-      <span class="nav-label">アイテム</span>
+    <button class="nav-btn active" id="nav-list" onclick="setView('list')">
+      <span class="nav-icon">📦</span><span class="nav-label">アイテム</span>
     </button>
-    <button class="nav-btn" onclick="openAdd()" id="nav-add">
-      <span class="nav-icon">＋</span>
-      <span class="nav-label">記録する</span>
+    <button class="nav-btn" onclick="openAdd()">
+      <span class="nav-icon">＋</span><span class="nav-label">記録する</span>
     </button>
-    <button class="nav-btn" onclick="openHistory()" id="nav-hist">
-      <span class="nav-icon">🕐</span>
-      <span class="nav-label">履歴</span>
+    <button class="nav-btn" onclick="openOcr()">
+      <span class="nav-icon">🧾</span><span class="nav-label">レシート</span>
     </button>
   </nav>
 </div>
@@ -315,6 +208,13 @@ body {
     <button class="close-btn" onclick="closeAdd()">✕</button>
   </div>
   <div class="sheet-body">
+    <div class="field">
+      <label>商品画像</label>
+      <div class="img-preview" id="add-img-preview" onclick="openImgSheet()">
+        <span style="font-size:32px">📷</span>
+        <span class="img-preview-label">タップして画像を設定</span>
+      </div>
+    </div>
     <div class="field-row">
       <div class="field">
         <label>アイテム名</label>
@@ -323,24 +223,113 @@ body {
       <div class="field">
         <label>カテゴリ</label>
         <select id="f-cat">
-          <option>日用品</option>
-          <option>食品</option>
-          <option>調味料</option>
-          <option>衛生用品</option>
-          <option>掃除用品</option>
-          <option>その他</option>
+          <option>日用品</option><option>食品</option><option>調味料</option>
+          <option>衛生用品</option><option>掃除用品</option><option>その他</option>
         </select>
       </div>
     </div>
-    <div class="field">
-      <label>購入日</label>
-      <input type="date" id="f-date">
+    <div class="field-row">
+      <div class="field">
+        <label>購入日</label>
+        <input type="date" id="f-date">
+      </div>
+      <div class="field">
+        <label>メモ（任意）</label>
+        <input type="text" id="f-note" placeholder="例：大容量" autocomplete="off">
+      </div>
     </div>
     <div class="field">
-      <label>メモ（任意）</label>
-      <input type="text" id="f-note" placeholder="例：大容量サイズ" autocomplete="off">
+      <label>購入個数</label>
+      <div class="stepper-row">
+        <div class="stepper">
+          <button onclick="addStepperVal(-1)">－</button>
+          <span id="f-stock">1</span>
+          <button onclick="addStepperVal(1)">＋</button>
+        </div>
+        <span style="font-size:13px;color:var(--text2)">個まとめ買い</span>
+      </div>
     </div>
     <button class="submit-btn" onclick="recordPurchase()">✓ 記録する</button>
+  </div>
+</div>
+
+<!-- Image Source Sheet -->
+<div class="sheet-overlay" id="overlay-img" onclick="closeImgSheet()"></div>
+<div class="sheet" id="sheet-img" style="max-height:60dvh">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">画像を設定</div>
+    <button class="close-btn" onclick="closeImgSheet()">✕</button>
+  </div>
+  <div class="sheet-body">
+    <div class="img-option" onclick="chooseFromCamera()">
+      <span class="img-option-icon">📸</span>
+      <div><div class="img-option-text">カメラで撮影</div><div class="img-option-sub">商品を直接撮る</div></div>
+    </div>
+    <div class="img-option" onclick="chooseFromLibrary()">
+      <span class="img-option-icon">🖼️</span>
+      <div><div class="img-option-text">フォトライブラリから選ぶ</div><div class="img-option-sub">保存済みの写真を使う</div></div>
+    </div>
+    <div class="img-option" onclick="searchGoogleImages()">
+      <span class="img-option-icon">🔍</span>
+      <div><div class="img-option-text">ネットで画像を検索</div><div class="img-option-sub">Google画像検索を開く</div></div>
+    </div>
+    <div class="img-option" onclick="enterImageUrl()">
+      <span class="img-option-icon">🔗</span>
+      <div><div class="img-option-text">URLで指定</div><div class="img-option-sub">画像のURLを直接入力</div></div>
+    </div>
+    <div class="field img-url-input" id="url-input-area">
+      <label>画像URL</label>
+      <input type="url" id="f-img-url" placeholder="https://..." oninput="previewUrl()">
+    </div>
+    <input type="file" id="file-input" accept="image/*" style="display:none" onchange="handleFile(event)">
+    <input type="file" id="camera-input" accept="image/*" capture="environment" style="display:none" onchange="handleFile(event)">
+  </div>
+</div>
+
+<!-- OCR Sheet -->
+<div class="sheet-overlay" id="overlay-ocr" onclick="closeOcr()"></div>
+<div class="sheet" id="sheet-ocr">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">🧾 レシート読み取り</div>
+    <button class="close-btn" onclick="closeOcr()">✕</button>
+  </div>
+  <div class="sheet-body">
+    <!-- Step 1: upload -->
+    <div id="ocr-step1">
+      <div class="ocr-drop" id="ocr-drop" onclick="document.getElementById('ocr-file').click()">
+        <span style="font-size:36px">📷</span>
+        <span class="ocr-drop-label">レシートを撮影 or 選択</span>
+        <span style="font-size:12px;color:var(--text3)">タップして画像を選ぶ</span>
+      </div>
+      <input type="file" id="ocr-file" accept="image/*" style="display:none" onchange="handleOcrFile(event)">
+      <input type="file" id="ocr-camera" accept="image/*" capture="environment" style="display:none" onchange="handleOcrFile(event)">
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <button class="submit-btn" style="background:var(--bg2);color:var(--text);margin-top:0;flex:1;" onclick="document.getElementById('ocr-camera').click()">📸 カメラで撮影</button>
+        <button class="submit-btn" style="background:var(--bg2);color:var(--text);margin-top:0;flex:1;" onclick="document.getElementById('ocr-file').click()">🖼️ ライブラリから</button>
+      </div>
+      <div style="margin-top:16px;padding:12px;background:var(--bg2);border-radius:var(--radius-sm);font-size:13px;color:var(--text2);line-height:1.6;">
+        💡 Claude APIを使って商品名・個数を自動で読み取ります。<br>
+        <span id="ocr-api-hint"></span>
+      </div>
+    </div>
+    <!-- Step 2: loading -->
+    <div class="ocr-loading" id="ocr-loading">
+      <div class="spinner"></div>
+      <div style="font-size:14px;color:var(--text2);">Claudeがレシートを解析中…</div>
+    </div>
+    <!-- Step 3: results -->
+    <div id="ocr-step3" style="display:none;">
+      <div style="font-size:14px;color:var(--text2);margin-bottom:12px;">読み取り結果を確認して登録してください</div>
+      <div class="ocr-section-label">購入日</div>
+      <div class="field" style="margin-bottom:12px;">
+        <input type="date" id="ocr-date">
+      </div>
+      <div class="ocr-section-label">商品一覧（チェックで登録）</div>
+      <div class="ocr-results" id="ocr-results"></div>
+      <button class="submit-btn" style="margin-top:16px;" onclick="registerOcrItems()">✓ チェックした商品を登録</button>
+    </div>
   </div>
 </div>
 
@@ -355,216 +344,363 @@ body {
   <div class="sheet-body" id="history-body"></div>
 </div>
 
+<!-- Settings Sheet -->
+<div class="sheet-overlay" id="overlay-settings" onclick="closeSettings()"></div>
+<div class="sheet" id="sheet-settings">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">⚙️ 設定</div>
+    <button class="close-btn" onclick="closeSettings()">✕</button>
+  </div>
+  <div class="sheet-body">
+    <div class="settings-section">
+      <div class="settings-label">Claude API キー（レシート読み取りに使用）</div>
+      <div class="api-key-row">
+        <input type="password" id="api-key-input" placeholder="sk-ant-..." autocomplete="off">
+        <button class="save-key-btn" onclick="saveApiKey()">保存</button>
+      </div>
+      <div class="key-status" id="key-status"></div>
+      <div style="font-size:12px;color:var(--text3);margin-top:8px;line-height:1.6;">
+        キーはこのデバイスのみに保存されます。<br>
+        コードには含まれないので安全です。<br>
+        取得: <a href="https://console.anthropic.com" target="_blank" style="color:var(--accent)">console.anthropic.com</a>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">データ管理</div>
+      <button class="danger-btn" onclick="clearAllData()">⚠️ すべてのデータを削除</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-const STORAGE_KEY = 'hozyuMemo_v2';
-const today = new Date();
+const STORAGE_KEY='hozyuMemo_v3';
+const API_KEY_KEY='hozyuApiKey';
+const today=new Date();
+document.getElementById('topbar-date').textContent=today.toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+document.getElementById('f-date').valueAsDate=today;
+document.getElementById('ocr-date').valueAsDate=today;
 
-document.getElementById('topbar-date').textContent = today.toLocaleDateString('ja-JP', {year:'numeric',month:'long',day:'numeric',weekday:'short'});
-document.getElementById('f-date').valueAsDate = today;
-
-function loadData() {
-  try {
-    const r = localStorage.getItem(STORAGE_KEY);
-    return r ? JSON.parse(r) : getSample();
-  } catch(e) { return getSample(); }
+function getApiKey(){return localStorage.getItem(API_KEY_KEY)||'';}
+function saveApiKey(){
+  const k=document.getElementById('api-key-input').value.trim();
+  if(!k){showToast('⚠ APIキーを入力してください');return;}
+  localStorage.setItem(API_KEY_KEY,k);
+  updateKeyStatus();
+  showToast('✓ APIキーを保存しました');
 }
-function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+function updateKeyStatus(){
+  const k=getApiKey();
+  const el=document.getElementById('key-status');
+  el.textContent=k?'✓ APIキーが設定されています':'未設定（レシート読み取りには必要です）';
+  el.className='key-status '+(k?'set':'unset');
+}
+function updateOcrHint(){
+  const el=document.getElementById('ocr-api-hint');
+  if(getApiKey()){el.textContent='APIキー設定済み ✓';el.style.color='var(--safe)';}
+  else{el.innerHTML='APIキーが未設定です。<a href="#" onclick="openSettings();return false;" style="color:var(--accent)">設定</a>から登録してください。';el.style.color='var(--warn)';}
+}
 
-function getSample() {
-  const ago = n => { const d = new Date(); d.setDate(d.getDate()-n); return d.toISOString().split('T')[0]; };
-  return [
-    {id:1, name:'洗濯洗剤', cat:'掃除用品', purchases:[ago(60),ago(30)], note:''},
-    {id:2, name:'醤油', cat:'調味料', purchases:[ago(90),ago(45),ago(5)], note:'大容量'},
-    {id:3, name:'シャンプー', cat:'衛生用品', purchases:[ago(50),ago(10)], note:''},
-    {id:4, name:'トイレットペーパー', cat:'日用品', purchases:[ago(40),ago(20),ago(2)], note:'12ロール'},
-    {id:5, name:'みりん', cat:'調味料', purchases:[ago(120),ago(65)], note:''},
+function loadData(){
+  try{const r=localStorage.getItem(STORAGE_KEY);return r?JSON.parse(r):getSample();}
+  catch(e){return getSample();}
+}
+function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}
+function getSample(){
+  const ago=n=>{const d=new Date();d.setDate(d.getDate()-n);return d.toISOString().split('T')[0];};
+  return[
+    {id:1,name:'洗濯洗剤',cat:'掃除用品',purchases:[ago(60),ago(30)],note:'',stock:2,img:null},
+    {id:2,name:'醤油',cat:'調味料',purchases:[ago(90),ago(45),ago(5)],note:'大容量',stock:1,img:null},
+    {id:3,name:'シャンプー',cat:'衛生用品',purchases:[ago(50),ago(10)],note:'',stock:0,img:null},
+    {id:4,name:'トイレットペーパー',cat:'日用品',purchases:[ago(40),ago(20),ago(2)],note:'12ロール',stock:3,img:null},
+    {id:5,name:'みりん',cat:'調味料',purchases:[ago(120),ago(65)],note:'',stock:1,img:null},
   ];
 }
+let data=loadData();
+let activeFilter='すべて';
 
-let data = loadData();
-let activeFilter = 'すべて';
-
-function avgCycle(purchases) {
-  if (purchases.length < 2) return null;
-  const s = [...purchases].sort();
-  let t = 0;
-  for (let i=1;i<s.length;i++) t += (new Date(s[i])-new Date(s[i-1]))/86400000;
+function avgCycle(purchases){
+  if(purchases.length<2)return null;
+  const s=[...purchases].sort();let t=0;
+  for(let i=1;i<s.length;i++)t+=(new Date(s[i])-new Date(s[i-1]))/86400000;
   return Math.round(t/(s.length-1));
 }
-function daysSince(d) { return Math.round((today - new Date(d))/86400000); }
-function getStatus(p) {
-  if (p < 0.7) return 'ok';
-  if (p < 0.9) return 'soon';
-  return 'now';
+function daysSince(d){return Math.round((today-new Date(d))/86400000);}
+function getStatus(p,stock){
+  if(stock>1)return'ok';
+  if(p<0.7)return'ok';if(p<0.9)return'soon';return'now';
 }
-function statusLabel(s) { return {ok:'在庫あり', soon:'もうすぐ', now:'補充して！'}[s]; }
+function statusLabel(s){return{ok:'在庫あり',soon:'もうすぐ',now:'補充して！'}[s];}
+function catEmoji(cat){return{日用品:'🧻',食品:'🍱',調味料:'🫙',衛生用品:'🧴',掃除用品:'🧹',その他:'📦'}[cat]||'📦';}
 
-function calcItem(item) {
-  const last = item.purchases.length ? [...item.purchases].sort().pop() : null;
-  const cycle = avgCycle(item.purchases);
-  const since = last ? daysSince(last) : null;
-  const progress = (cycle && since != null) ? Math.min(since/cycle, 1) : null;
-  const status = progress != null ? getStatus(progress) : 'ok';
-  const daysLeft = (cycle && since != null) ? Math.max(0, cycle-since) : null;
-  const nextDate = (cycle && last) ? (() => {
-    const d = new Date(last); d.setDate(d.getDate()+cycle);
-    return d.toLocaleDateString('ja-JP',{month:'long',day:'numeric'});
-  })() : null;
-  return { last, cycle, since, progress, status, daysLeft, nextDate };
+function calcItem(item){
+  const last=item.purchases.length?[...item.purchases].sort().pop():null;
+  const cycle=avgCycle(item.purchases);
+  const since=last?daysSince(last):null;
+  const progress=(cycle&&since!=null)?Math.min(since/cycle,1):null;
+  const stock=item.stock??0;
+  const status=progress!=null?getStatus(progress,stock):(stock>0?'ok':'now');
+  const nextDate=(cycle&&last)?()=>{const d=new Date(last);d.setDate(d.getDate()+cycle);return d.toLocaleDateString('ja-JP',{month:'long',day:'numeric'});}():null;
+  return{last,cycle,since,progress,status,nextDate,stock};
 }
 
-function renderChips() {
-  const cats = ['すべて', ...new Set(data.map(d=>d.cat))];
-  document.getElementById('chips').innerHTML = cats.map(c =>
-    `<button class="chip${c===activeFilter?' active':''}" onclick="setFilter('${c}')">${c}</button>`
-  ).join('');
+function renderChips(){
+  const cats=['すべて',...new Set(data.map(d=>d.cat))];
+  document.getElementById('chips').innerHTML=cats.map(c=>`<button class="chip${c===activeFilter?' active':''}" onclick="setFilter('${c}')">${c}</button>`).join('');
 }
-
-function renderItems() {
-  const filtered = activeFilter === 'すべて' ? data : data.filter(d=>d.cat===activeFilter);
-  const sorted = [...filtered].sort((a,b) => {
-    const sa = calcItem(a), sb = calcItem(b);
-    const order = {now:0, soon:1, ok:2};
-    return order[sa.status]-order[sb.status];
-  });
-
-  let ok=0, soon=0, now=0;
-  data.forEach(item => {
-    const {status} = calcItem(item);
-    if (status==='ok') ok++;
-    else if (status==='soon') soon++;
-    else now++;
-  });
-  document.getElementById('cnt-ok').textContent = ok;
-  document.getElementById('cnt-soon').textContent = soon;
-  document.getElementById('cnt-now').textContent = now;
-
-  if (!sorted.length) {
-    document.getElementById('items-list').innerHTML = '<div class="empty">アイテムがありません<br>「記録する」から追加してみましょう</div>';
-    return;
-  }
-
-  document.getElementById('items-list').innerHTML = sorted.map((item, idx) => {
-    const {cycle, since, progress, status, daysLeft, nextDate} = calcItem(item);
-    const lastStr = item.purchases.length ? new Date([...item.purchases].sort().pop()).toLocaleDateString('ja-JP',{month:'short',day:'numeric'}) : '—';
-    return `<div class="item-card ${status}" style="animation-delay:${idx*0.04}s">
-      <div class="item-top">
-        <div>
-          <div class="item-name">${item.name}</div>
-          <div class="item-cat">${item.cat}${item.note?' · '+item.note:''}</div>
+function renderItems(){
+  const filtered=activeFilter==='すべて'?data:data.filter(d=>d.cat===activeFilter);
+  const sorted=[...filtered].sort((a,b)=>{const o={now:0,soon:1,ok:2};return o[calcItem(a).status]-o[calcItem(b).status];});
+  let ok=0,soon=0,now=0;
+  data.forEach(item=>{const s=calcItem(item).status;if(s==='ok')ok++;else if(s==='soon')soon++;else now++;});
+  document.getElementById('cnt-ok').textContent=ok;
+  document.getElementById('cnt-soon').textContent=soon;
+  document.getElementById('cnt-now').textContent=now;
+  if(!sorted.length){document.getElementById('items-list').innerHTML='<div class="empty">アイテムがありません<br>「記録する」から追加しましょう</div>';return;}
+  document.getElementById('items-list').innerHTML=sorted.map((item,idx)=>{
+    const{cycle,since,progress,status,nextDate,stock}=calcItem(item);
+    const lastStr=item.purchases.length?new Date([...item.purchases].sort().pop()).toLocaleDateString('ja-JP',{month:'short',day:'numeric'}):'—';
+    const imgHtml=item.img?`<img src="${item.img}" alt="${item.name}" onerror="this.parentElement.innerHTML='${catEmoji(item.cat)}'"/>`:catEmoji(item.cat);
+    return`<div class="item-card ${status}" style="animation-delay:${idx*0.04}s">
+      <div class="card-inner">
+        <div class="card-img" onclick="openImgEdit(${item.id})">${imgHtml}</div>
+        <div class="card-body">
+          <div class="item-top">
+            <div><div class="item-name">${item.name}</div><div class="item-cat">${item.cat}${item.note?' · '+item.note:''}</div></div>
+            <button class="buy-btn" onclick="quickBuy(${item.id})">買った ✓</button>
+          </div>
+          <div class="stock-row">
+            <span class="stock-label">ストック</span>
+            <div class="stock-controls">
+              <button class="stock-btn" onclick="changeStock(${item.id},-1)">－</button>
+              <span class="stock-num${stock===0?' zero':''}">×${stock}</span>
+              <button class="stock-btn" onclick="changeStock(${item.id},1)">＋</button>
+            </div>
+            <button class="open-btn" onclick="useOne(${item.id})">開封・使い切り</button>
+          </div>
+          ${progress!=null?`<div class="progress-track"><div class="progress-fill" style="width:${Math.round(progress*100)}%"></div></div>`:''}
+          <div class="item-meta">
+            ${cycle?`<div class="meta-item">サイクル <strong>${cycle}日</strong></div>`:''}
+            ${since!=null?`<div class="meta-item">前回 <strong>${lastStr}</strong></div>`:''}
+            ${nextDate?`<div class="meta-item">次回 <strong>${nextDate}</strong></div>`:'<div class="meta-item" style="color:var(--text3)">2回記録でサイクル計算</div>'}
+            <div class="status-pill">${statusLabel(status)}</div>
+          </div>
         </div>
-        <button class="buy-btn" onclick="quickBuy(${item.id})">今日買った ✓</button>
-      </div>
-      ${progress != null ? `<div class="progress-track"><div class="progress-fill" style="width:${Math.round(progress*100)}%"></div></div>` : ''}
-      <div class="item-meta">
-        ${cycle ? `<div class="meta-item">サイクル <strong>${cycle}日</strong></div>` : ''}
-        ${since != null ? `<div class="meta-item">前回 <strong>${lastStr}</strong></div>` : ''}
-        ${nextDate ? `<div class="meta-item">次回 <strong>${nextDate}</strong></div>` : '<div class="meta-item" style="color:var(--text3)">2回記録でサイクル計算</div>'}
-        <div class="status-pill">${statusLabel(status)}</div>
       </div>
     </div>`;
   }).join('');
 }
-
-function setFilter(cat) {
-  activeFilter = cat;
-  renderChips();
-  renderItems();
+function setFilter(cat){activeFilter=cat;renderChips();renderItems();}
+function changeStock(id,delta){
+  const item=data.find(d=>d.id===id);if(!item)return;
+  item.stock=Math.max(0,(item.stock??0)+delta);save();renderItems();
+  showToast(delta>0?`✓ ストック +1（×${item.stock}個）`:`ストック -1（×${item.stock}個）`);
+}
+function useOne(id){
+  const item=data.find(d=>d.id===id);if(!item)return;
+  if((item.stock??0)>1){item.stock--;save();renderItems();showToast(`📦 開封！残りストック ×${item.stock}個`);}
+  else{item.stock=0;save();renderItems();showToast(`🔴 使い切り！補充を検討してください`);}
+}
+function quickBuy(id){
+  const item=data.find(d=>d.id===id);if(!item)return;
+  item.purchases.push(today.toISOString().split('T')[0]);
+  item.stock=(item.stock??0)+1;save();renderItems();
+  showToast(`✓ ${item.name} を記録！ストック ×${item.stock}`);
 }
 
-function quickBuy(id) {
-  const item = data.find(d=>d.id===id);
-  if (!item) return;
-  const todayStr = today.toISOString().split('T')[0];
-  item.purchases.push(todayStr);
-  save();
-  renderItems();
-  showToast('✓ '+item.name+' を記録しました！');
+let addStockVal=1;
+let pendingImgData=null;
+function addStepperVal(delta){addStockVal=Math.max(1,addStockVal+delta);document.getElementById('f-stock').textContent=addStockVal;}
+function openAdd(){
+  pendingImgData=null;addStockVal=1;
+  document.getElementById('f-stock').textContent='1';
+  document.getElementById('f-name').value='';document.getElementById('f-note').value='';
+  document.getElementById('f-date').valueAsDate=today;
+  document.getElementById('add-img-preview').innerHTML='<span style="font-size:32px">📷</span><span class="img-preview-label">タップして画像を設定</span>';
+  document.getElementById('overlay-add').classList.add('open');document.getElementById('sheet-add').classList.add('open');
+  setTimeout(()=>document.getElementById('f-name').focus(),400);
+}
+function closeAdd(){document.getElementById('overlay-add').classList.remove('open');document.getElementById('sheet-add').classList.remove('open');}
+function recordPurchase(){
+  const name=document.getElementById('f-name').value.trim();
+  const date=document.getElementById('f-date').value;
+  const cat=document.getElementById('f-cat').value;
+  const note=document.getElementById('f-note').value.trim();
+  if(!name||!date){showToast('⚠ アイテム名と日付を入力してください');return;}
+  let item=data.find(d=>d.name===name);
+  if(item){item.purchases.push(date);item.stock=(item.stock??0)+addStockVal;if(pendingImgData)item.img=pendingImgData;}
+  else{data.push({id:Date.now(),name,cat,purchases:[date],note,stock:addStockVal,img:pendingImgData});}
+  save();closeAdd();renderChips();renderItems();
+  showToast(`✓ ${name} を記録！（×${addStockVal}個）`);
 }
 
-function openAdd() {
-  document.getElementById('overlay-add').classList.add('open');
-  document.getElementById('sheet-add').classList.add('open');
-  document.getElementById('f-date').valueAsDate = today;
-  setTimeout(()=>document.getElementById('f-name').focus(), 400);
+let editingImgId=null;
+function openImgSheet(){editingImgId=null;document.getElementById('url-input-area').classList.remove('visible');document.getElementById('overlay-img').classList.add('open');document.getElementById('sheet-img').classList.add('open');}
+function openImgEdit(id){editingImgId=id;document.getElementById('url-input-area').classList.remove('visible');document.getElementById('overlay-img').classList.add('open');document.getElementById('sheet-img').classList.add('open');}
+function closeImgSheet(){document.getElementById('overlay-img').classList.remove('open');document.getElementById('sheet-img').classList.remove('open');}
+function chooseFromCamera(){document.getElementById('camera-input').click();}
+function chooseFromLibrary(){document.getElementById('file-input').click();}
+function searchGoogleImages(){
+  const name=editingImgId?data.find(d=>d.id===editingImgId)?.name||'':document.getElementById('f-name').value.trim();
+  window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(name+' 商品')}`,'_blank');
+  closeImgSheet();setTimeout(()=>showToast('画像を長押し→URLをコピー→URLで指定から貼り付け'),500);
 }
-function closeAdd() {
-  document.getElementById('overlay-add').classList.remove('open');
-  document.getElementById('sheet-add').classList.remove('open');
+function enterImageUrl(){document.getElementById('url-input-area').classList.toggle('visible');document.getElementById('f-img-url').value='';document.getElementById('f-img-url').focus();}
+function previewUrl(){const url=document.getElementById('f-img-url').value.trim();if(url)applyImage(url);}
+function handleFile(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();reader.onload=ev=>applyImage(ev.target.result);reader.readAsDataURL(file);e.target.value='';
 }
-
-function recordPurchase() {
-  const name = document.getElementById('f-name').value.trim();
-  const date = document.getElementById('f-date').value;
-  const cat = document.getElementById('f-cat').value;
-  const note = document.getElementById('f-note').value.trim();
-  if (!name || !date) { showToast('⚠ アイテム名と日付を入力してください'); return; }
-  let item = data.find(d=>d.name===name);
-  if (item) {
-    item.purchases.push(date);
-  } else {
-    data.push({id:Date.now(), name, cat, purchases:[date], note});
-  }
-  save();
-  document.getElementById('f-name').value='';
-  document.getElementById('f-note').value='';
-  closeAdd();
-  renderChips();
-  renderItems();
-  showToast('✓ '+name+' を記録しました！');
+function applyImage(src){
+  if(editingImgId){const item=data.find(d=>d.id===editingImgId);if(item){item.img=src;save();renderItems();}closeImgSheet();showToast('✓ 画像を更新しました');}
+  else{pendingImgData=src;document.getElementById('add-img-preview').innerHTML=`<img src="${src}" alt="preview" style="width:100%;height:100%;object-fit:cover">`;closeImgSheet();showToast('✓ 画像を設定しました');}
 }
 
-function openHistory() {
-  const entries = [];
-  data.forEach(item => {
-    [...item.purchases].sort().reverse().forEach(date => {
-      entries.push({name:item.name, cat:item.cat, date});
+// ===== OCR =====
+let ocrImageData=null;
+function openOcr(){
+  ocrImageData=null;
+  document.getElementById('ocr-step1').style.display='';
+  document.getElementById('ocr-loading').className='ocr-loading';
+  document.getElementById('ocr-step3').style.display='none';
+  document.getElementById('ocr-drop').className='ocr-drop';
+  document.getElementById('ocr-drop').innerHTML='<span style="font-size:36px">📷</span><span class="ocr-drop-label">レシートを撮影 or 選択</span><span style="font-size:12px;color:var(--text3)">タップして画像を選ぶ</span>';
+  document.getElementById('ocr-date').valueAsDate=today;
+  updateOcrHint();
+  document.getElementById('overlay-ocr').classList.add('open');document.getElementById('sheet-ocr').classList.add('open');
+}
+function closeOcr(){document.getElementById('overlay-ocr').classList.remove('open');document.getElementById('sheet-ocr').classList.remove('open');}
+
+function handleOcrFile(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    ocrImageData=ev.target.result;
+    const drop=document.getElementById('ocr-drop');
+    drop.className='ocr-drop has-img';
+    drop.innerHTML=`<img src="${ocrImageData}" style="width:100%;max-height:200px;object-fit:contain;border-radius:var(--radius-sm)">`;
+    setTimeout(()=>runOcr(),300);
+  };
+  reader.readAsDataURL(file);e.target.value='';
+}
+
+async function runOcr(){
+  const apiKey=getApiKey();
+  if(!apiKey){showToast('⚠ APIキーを設定してください');openSettings();return;}
+  document.getElementById('ocr-step1').style.display='none';
+  document.getElementById('ocr-loading').className='ocr-loading show';
+
+  const base64=ocrImageData.split(',')[1];
+  const mediaType=ocrImageData.match(/data:([^;]+)/)[1];
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        messages:[{
+          role:'user',
+          content:[
+            {type:'image',source:{type:'base64',media_type:mediaType,data:base64}},
+            {type:'text',text:`このレシートから商品一覧を読み取ってください。
+以下のJSON形式のみで返してください（説明文不要）:
+{"date":"YYYY-MM-DD or null","items":[{"name":"商品名","qty":個数}]}
+- 食品・日用品・調味料・衛生用品・掃除用品に関係する商品のみ
+- 税金・合計・袋代などは除外
+- 商品名は短く簡潔に（ブランド名は省略可）
+- 個数が読み取れない場合は1`}
+          ]
+        }]
+      })
     });
+    if(!res.ok){
+      const err=await res.json();
+      throw new Error(err.error?.message||'API error');
+    }
+    const json=await res.json();
+    const text=json.content[0].text.trim().replace(/```json|```/g,'').trim();
+    const parsed=JSON.parse(text);
+    showOcrResults(parsed);
+  }catch(err){
+    document.getElementById('ocr-loading').className='ocr-loading';
+    document.getElementById('ocr-step1').style.display='';
+    showToast('⚠ 読み取りに失敗しました: '+err.message);
+    console.error(err);
+  }
+}
+
+function showOcrResults(parsed){
+  document.getElementById('ocr-loading').className='ocr-loading';
+  if(parsed.date)document.getElementById('ocr-date').value=parsed.date;
+  const resultsEl=document.getElementById('ocr-results');
+  if(!parsed.items||!parsed.items.length){
+    resultsEl.innerHTML='<div class="empty">商品が見つかりませんでした</div>';
+    document.getElementById('ocr-step3').style.display='';
+    return;
+  }
+  resultsEl.innerHTML=parsed.items.map((item,i)=>`
+    <div class="ocr-item-row">
+      <input type="checkbox" class="ocr-item-check" id="ocr-chk-${i}" checked>
+      <span class="ocr-item-name">${item.name}</span>
+      <span class="ocr-item-qty">×${item.qty||1}</span>
+    </div>
+  `).join('');
+  resultsEl.dataset.items=JSON.stringify(parsed.items);
+  document.getElementById('ocr-step3').style.display='';
+}
+
+function registerOcrItems(){
+  const date=document.getElementById('ocr-date').value;
+  const items=JSON.parse(document.getElementById('ocr-results').dataset.items||'[]');
+  let count=0;
+  items.forEach((item,i)=>{
+    const chk=document.getElementById(`ocr-chk-${i}`);
+    if(!chk||!chk.checked)return;
+    const qty=item.qty||1;
+    let existing=data.find(d=>d.name===item.name);
+    if(existing){existing.purchases.push(date);existing.stock=(existing.stock??0)+qty;}
+    else{data.push({id:Date.now()+i,name:item.name,cat:'その他',purchases:[date],note:'',stock:qty,img:null});}
+    count++;
   });
+  save();closeOcr();renderChips();renderItems();
+  showToast(`✓ ${count}品を登録しました！`);
+}
+
+function openHistory(){
+  const entries=[];
+  data.forEach(item=>[...item.purchases].sort().reverse().forEach(date=>entries.push({name:item.name,cat:item.cat,date})));
   entries.sort((a,b)=>b.date.localeCompare(a.date));
-
-  const groups = {};
-  entries.forEach(e => {
-    const label = new Date(e.date).toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
-    if (!groups[label]) groups[label]=[];
-    groups[label].push(e);
-  });
-
-  const html = Object.entries(groups).slice(0,20).map(([label,rows])=>
-    `<div class="history-group">
-      <div class="history-date-label">${label}</div>
-      ${rows.map(r=>`<div class="history-row">
-        <div><div class="h-name">${r.name}</div><div class="h-cat">${r.cat}</div></div>
-      </div>`).join('')}
-    </div>`
-  ).join('');
-
-  document.getElementById('history-body').innerHTML = html || '<div class="empty">履歴がありません</div>';
-  document.getElementById('overlay-hist').classList.add('open');
-  document.getElementById('sheet-hist').classList.add('open');
+  const groups={};
+  entries.forEach(e=>{const label=new Date(e.date).toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'});if(!groups[label])groups[label]=[];groups[label].push(e);});
+  document.getElementById('history-body').innerHTML=Object.entries(groups).slice(0,30).map(([label,rows])=>`<div class="history-group"><div class="history-date-label">${label}</div>${rows.map(r=>`<div class="history-row"><div><div class="h-name">${r.name}</div><div class="h-cat">${r.cat}</div></div></div>`).join('')}</div>`).join('')||'<div class="empty">履歴がありません</div>';
+  document.getElementById('overlay-hist').classList.add('open');document.getElementById('sheet-hist').classList.add('open');
 }
-function closeHistory() {
-  document.getElementById('overlay-hist').classList.remove('open');
-  document.getElementById('sheet-hist').classList.remove('open');
+function closeHistory(){document.getElementById('overlay-hist').classList.remove('open');document.getElementById('sheet-hist').classList.remove('open');}
+
+function openSettings(){
+  document.getElementById('api-key-input').value=getApiKey();
+  updateKeyStatus();
+  document.getElementById('overlay-settings').classList.add('open');document.getElementById('sheet-settings').classList.add('open');
+}
+function closeSettings(){document.getElementById('overlay-settings').classList.remove('open');document.getElementById('sheet-settings').classList.remove('open');}
+
+function clearAllData(){
+  if(!confirm('すべてのデータを削除しますか？'))return;
+  localStorage.removeItem(STORAGE_KEY);data=getSample();save();renderChips();renderItems();closeSettings();showToast('データを削除しました');
 }
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(t._to);
-  t._to = setTimeout(()=>t.classList.remove('show'), 2500);
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._to);t._to=setTimeout(()=>t.classList.remove('show'),2800);
 }
+function setView(v){}
 
-function setView(v) {}
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(()=>{});
-}
-
-renderChips();
-renderItems();
+if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+renderChips();renderItems();
 </script>
 </body>
 </html>
