@@ -1053,31 +1053,27 @@ async function registerOcrItems(){
   const date=document.getElementById('ocr-date').value;
   const items=JSON.parse(document.getElementById('ocr-results').dataset.items||'[]');
   let count=0;
-  const conflicts=[];
 
-  items.forEach((item,i)=>{
+  for(let i=0;i<items.length;i++){
+    const item=items[i];
     const chk=document.getElementById(`ocr-chk-${i}`);
-    if(!chk||!chk.checked)return;
+    if(!chk||!chk.checked)continue;
+    const qty=item.qty||1;
     const existing=data.find(d=>d.name===item.name);
-    if(existing)conflicts.push({existing,item,qty:item.qty||1,date});
-    else{
-      data.push({id:Date.now()+i,name:item.name,cat:item.cat||'その他',purchases:[date],note:'',stock:item.qty||1,img:null});
-      count++;
+    if(existing){
+      existing.purchases.push(date);
+      existing.stock=(existing.stock??0)+qty;
+      await saveItem(existing);
+    } else {
+      const newItem={_isNew:true,name:item.name,cat:item.cat||'その他',purchases:[date],note:'',stock:qty,img:null};
+      const inserted=await saveItem(newItem);
+      if(inserted)data.push(inserted);
     }
-  });
-
-  if(conflicts.length>0){
-    // 同名があればまとめて既存に追加（OCRは一括で）
-    conflicts.forEach(({existing,qty,date})=>{
-      existing.purchases.push(date);existing.stock=(existing.stock??0)+qty;
-      count++;
-    });
+    count++;
   }
 
   save();closeOcr();renderChips();renderItems();
   showToast(`✓ ${count}品を登録しました！`);
-  // Supabaseに同期
-  await loadData();
 }
 
 // ===== HISTORY =====
