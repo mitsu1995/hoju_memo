@@ -494,7 +494,8 @@ function calcItem(item){
   const progress=(cycle&&since!=null)?Math.min(since/cycle,1):null;
   const stock=item.stock??0;
   const status=progress!=null?getStatus(progress,stock):(stock>0?'ok':'now');
-  const nextDate=(cycle&&last)?()=>{const d=new Date(last);d.setDate(d.getDate()+cycle);return d.toLocaleDateString('ja-JP',{month:'long',day:'numeric'});}():null;
+  let nextDate=null;
+  if(cycle&&last){const d=new Date(last);d.setDate(d.getDate()+cycle);nextDate=d.toLocaleDateString('ja-JP',{month:'long',day:'numeric'});}
   return{last,cycle,since,progress,status,nextDate,stock};
 }
 
