@@ -521,14 +521,16 @@ function renderItems(){
     const{cycle,since,progress,status,nextDate,stock}=calcItem(item);
     const lastStr=item.purchases.length?new Date([...item.purchases].sort().pop()).toLocaleDateString('ja-JP',{month:'short',day:'numeric'}):'—';
     const imgHtml=item.img?`<img src="${item.img}" alt="${item.name}" onerror="this.parentElement.innerHTML='${catEmoji(item.cat)}'"/>`:catEmoji(item.cat);
-    return`<div class="item-card ${status}" style="animation-delay:${idx*0.04}s" data-id="${item.id}"
-      oncontextmenu="showCtxMenu(event,${item.id});return false;">
+    return`<div class="item-card ${status}" style="animation-delay:${idx*0.04}s" data-id="${item.id}">
       <div class="card-inner">
         <div class="card-img" onclick="openImgEdit(${item.id})">${imgHtml}</div>
         <div class="card-body">
           <div class="item-top">
             <div><div class="item-name">${item.name}</div><div class="item-cat">${item.cat}${item.note?' · '+item.note:''}</div></div>
-            <button class="buy-btn" onclick="quickBuy(${item.id})">買った ✓</button>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <button class="open-btn" onclick="editItem(${item.id})" style="font-size:13px;padding:5px 10px;">✏️</button>
+              <button class="buy-btn" onclick="quickBuy(${item.id})">買った ✓</button>
+            </div>
           </div>
           <div class="stock-row">
             <span class="stock-label">ストック</span>
@@ -545,6 +547,7 @@ function renderItems(){
             ${since!=null?`<div class="meta-item">前回 <strong>${lastStr}</strong></div>`:''}
             ${nextDate?`<div class="meta-item">次回 <strong>${nextDate}</strong></div>`:'<div class="meta-item" style="color:var(--text3)">2回記録でサイクル計算</div>'}
             <div class="status-pill">${statusLabel(status)}</div>
+            <button class="open-btn" onclick="deleteItemConfirm(${item.id})" style="color:var(--danger);border-color:var(--danger);margin-left:4px;">🗑️</button>
           </div>
         </div>
       </div>
