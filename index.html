@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="補充メモ">
@@ -29,7 +29,7 @@
 }}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;max-width:430px;margin:0 auto;overscroll-behavior:none;font-weight:400;}
-.app{display:flex;flex-direction:column;min-height:100dvh;min-height:-webkit-fill-available;}
+.app{display:flex;flex-direction:column;height:100dvh;}
 .topbar{position:sticky;top:0;z-index:100;padding:calc(var(--safe-top) + 16px) 20px 12px;border-bottom:1px solid var(--border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:color-mix(in srgb,var(--bg) 88%,transparent);}
 .topbar-inner{display:flex;align-items:center;justify-content:space-between;}
 .topbar h1{font-size:22px;font-weight:400;letter-spacing:-0.5px;}
@@ -166,6 +166,15 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .key-status.unset{color:var(--text3);}
 .danger-btn{width:100%;padding:12px;border-radius:var(--radius-sm);border:1px solid var(--danger);background:none;color:var(--danger);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;}
 
+/* Detail sheet */
+.detail-stat{background:var(--bg2);border-radius:var(--radius-sm);padding:10px;text-align:center;}
+.detail-stat-num{font-size:18px;font-weight:400;color:var(--text);}
+.detail-stat-label{font-size:10px;color:var(--text3);margin-top:2px;}
+.detail-hist-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+.detail-hist-row:last-child{border-bottom:none;}
+.detail-hist-date{font-size:14px;color:var(--text);}
+.detail-hist-del{background:none;border:none;color:var(--text3);font-size:14px;cursor:pointer;padding:4px 8px;}
+
 /* Context menu */
 .ctx-menu{position:fixed;background:var(--card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:0 8px 32px rgba(0,0,0,0.2);z-index:400;min-width:180px;overflow:hidden;animation:ctxIn 0.15s ease;}
 @keyframes ctxIn{from{opacity:0;transform:scale(0.92);}to{opacity:1;transform:scale(1);}}
@@ -176,10 +185,11 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 
 /* Shop mode */
 .shop-memo-area{padding:0 0 12px;width:100%;overflow:hidden;}
-.shop-memo-input-row{display:flex;gap:8px;margin-bottom:10px;width:100%;}
-.shop-memo-input-row input{flex:1;min-width:0;padding:10px 14px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:15px;font-family:inherit;outline:none;-webkit-appearance:none;}
-.shop-memo-input-row input:focus{border-color:var(--accent);}
-.shop-memo-add-btn{width:44px;height:44px;border-radius:50%;background:#febc2b;border:none;font-size:22px;color:var(--text);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:inherit;-webkit-tap-highlight-color:transparent;}
+.shop-memo-area{padding:0 0 12px;width:100%;}
+.shop-memo-input-wrap{position:relative;margin-bottom:10px;}
+.shop-memo-input-wrap input{width:100%;padding:12px 56px 12px 18px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:15px;font-family:inherit;outline:none;-webkit-appearance:none;box-sizing:border-box;}
+.shop-memo-input-wrap input:focus{border-color:var(--accent);}
+.shop-memo-add-btn{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;background:#febc2b;border:none;font-size:20px;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;line-height:1;}
 .shop-section-label{font-size:11px;color:var(--text3);font-weight:400;margin:12px 0 6px;padding:0 2px;letter-spacing:0.03em;}
 .shop-memo-item{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:6px;}
 .shop-memo-item.checked{opacity:0.4;}
@@ -375,6 +385,36 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
   </div>
 </div>
 
+<!-- Detail Sheet -->
+<div class="sheet-overlay" id="overlay-detail" onclick="closeDetail()"></div>
+<div class="sheet" id="sheet-detail">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div id="detail-emoji" style="font-size:28px;"></div>
+      <div>
+        <div class="sheet-title" id="detail-name"></div>
+        <div style="font-size:12px;color:var(--text3);margin-top:2px;" id="detail-cat"></div>
+      </div>
+    </div>
+    <button class="close-btn" onclick="closeDetail()">✕</button>
+  </div>
+  <div class="sheet-body">
+    <!-- Stats -->
+    <div id="detail-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;"></div>
+    <!-- Purchase history -->
+    <div style="font-size:13px;color:var(--text2);margin-bottom:10px;">購入履歴</div>
+    <div id="detail-history"></div>
+    <!-- Add purchase date -->
+    <div style="display:flex;gap:8px;margin-top:14px;align-items:center;">
+      <input type="date" id="detail-add-date" style="flex:1;padding:10px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:14px;font-family:inherit;outline:none;">
+      <button onclick="addDetailPurchase()" style="padding:10px 16px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap;">＋ 追加</button>
+    </div>
+    <!-- Delete item -->
+    <button onclick="deleteItemConfirm(detailItemId);closeDetail();" style="width:100%;margin-top:16px;padding:12px;border-radius:var(--radius-sm);border:1px solid var(--danger);background:none;color:var(--danger);font-size:14px;cursor:pointer;font-family:inherit;">🗑️ このアイテムを削除</button>
+  </div>
+</div>
+
 <!-- OCR Sheet -->
 <div class="sheet-overlay" id="overlay-ocr" onclick="closeOcr()"></div>
 <div class="sheet" id="sheet-ocr">
@@ -529,6 +569,7 @@ async function loadData(){
     localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
     showToast('✓ データを読み込みました');
   }
+  await loadMemoItems();
   renderChips();renderItems();
 }
 
@@ -562,6 +603,19 @@ async function deleteItem(id){
   const{error}=await sb.from('items').delete().eq('id',id).eq('user_id',USER_ID);
   if(error){console.error(error);showToast('⚠ 削除に失敗しました');return false;}
   return true;
+}
+
+async function saveMemoItems(){
+  localStorage.setItem('hozyuMemo_memo', JSON.stringify(memoItems));
+  await sb.from('memo_items').upsert({user_id:USER_ID, items:memoItems},{onConflict:'user_id'});
+}
+
+async function loadMemoItems(){
+  try{
+    const{data:row}=await sb.from('memo_items').select('items').eq('user_id',USER_ID).single();
+    if(row&&row.items)memoItems=row.items;
+    else{const local=localStorage.getItem('hozyuMemo_memo');if(local)memoItems=JSON.parse(local);}
+  }catch(e){const local=localStorage.getItem('hozyuMemo_memo');if(local)memoItems=JSON.parse(local);}
 }
 
 function getSample(){
@@ -632,7 +686,7 @@ function renderItems(){
         <div class="card-img" onclick="openImgEdit(${item.id})">${imgHtml}</div>
         <div class="card-body">
           <div class="item-top">
-            <div><div class="item-name">${item.name}</div><div class="item-cat">${item.cat}${item.note?' · '+item.note:''}</div></div>
+            <div onclick="openDetail(${item.id})" style="cursor:pointer;"><div class="item-name">${item.name}</div><div class="item-cat">${item.cat}${item.note?' · '+item.note:''}</div></div>
             <div style="display:flex;gap:6px;align-items:center;">
               <button class="open-btn" onclick="editItem(${item.id})" style="font-size:13px;padding:5px 10px;">✏️</button>
               <button class="buy-btn" onclick="quickBuy(${item.id})">買った ✓</button>
@@ -709,7 +763,7 @@ function shareToLine(){
 function toggleShopMode(){
   shopMode=!shopMode;
   shopChecked=new Set();
-  if(!shopMode)memoItems=[];
+  if(!shopMode){memoItems=memoItems.filter(m=>!m.done);saveMemoItems();}
   const btn=document.getElementById('shop-mode-btn');
   if(shopMode){btn.classList.add('shop-mode-active');btn.title='通常モードに戻る';}
   else{btn.classList.remove('shop-mode-active');btn.title='買い物モード';}
@@ -728,7 +782,7 @@ function renderShopMode(sorted){
 
   // Memo input
   html+=`<div class="shop-memo-area">
-    <div class="shop-memo-input-row">
+    <div class="shop-memo-input-wrap">
       <input type="text" id="memo-input" placeholder="今日買うものを追加..." autocomplete="off" onkeydown="if(event.key==='Enter')addMemoItem()">
       <button class="shop-memo-add-btn" onclick="addMemoItem()">＋</button>
     </div>
@@ -769,24 +823,27 @@ function renderShopMode(sorted){
   listEl.innerHTML=html;
 }
 
-function addMemoItem(){
+async function addMemoItem(){
   const input=document.getElementById('memo-input');
   if(!input)return;
   const name=input.value.trim();
   if(!name){showToast('⚠ 内容を入力してください');return;}
   memoItems.push({name,done:false});
   input.value='';
+  await saveMemoItems();
   renderItems();
   setTimeout(()=>{const el=document.getElementById('memo-input');if(el)el.focus();},100);
 }
 
-function toggleMemoCheck(i){
+async function toggleMemoCheck(i){
   if(memoItems[i])memoItems[i].done=!memoItems[i].done;
+  await saveMemoItems();
   renderItems();
 }
 
-function deleteMemoItem(i){
+async function deleteMemoItem(i){
   memoItems.splice(i,1);
+  await saveMemoItems();
   renderItems();
 }
 
@@ -1171,6 +1228,75 @@ async function registerOcrItems(){
 }
 
 // ===== HISTORY =====
+// ===== DETAIL SHEET =====
+let detailItemId=null;
+
+function openDetail(id){
+  const item=data.find(d=>d.id===id);if(!item)return;
+  detailItemId=id;
+  const{cycle,since,progress,status,stock}=calcItem(item);
+  const emoji=item.img?(item.img.startsWith('emoji:')?item.img.slice(6):'🖼️'):catEmoji(item.cat);
+  document.getElementById('detail-emoji').textContent=emoji;
+  document.getElementById('detail-name').textContent=item.name;
+  document.getElementById('detail-cat').textContent=item.cat+(item.note?' · '+item.note:'');
+
+  // Stats
+  const statsEl=document.getElementById('detail-stats');
+  statsEl.innerHTML=`
+    <div class="detail-stat"><div class="detail-stat-num">${cycle?cycle+'日':'—'}</div><div class="detail-stat-label">サイクル</div></div>
+    <div class="detail-stat"><div class="detail-stat-num">×${stock}</div><div class="detail-stat-label">ストック</div></div>
+    <div class="detail-stat"><div class="detail-stat-num">${item.purchases.length}</div><div class="detail-stat-label">購入回数</div></div>
+  `;
+
+  // History
+  renderDetailHistory(item);
+
+  // Default date
+  document.getElementById('detail-add-date').valueAsDate=today;
+
+  document.getElementById('overlay-detail').classList.add('open');
+  document.getElementById('sheet-detail').classList.add('open');
+}
+
+function renderDetailHistory(item){
+  const sorted=[...item.purchases].sort().reverse();
+  const el=document.getElementById('detail-history');
+  if(!sorted.length){el.innerHTML='<div style="color:var(--text3);font-size:13px;padding:10px 0;">購入履歴がありません</div>';return;}
+  el.innerHTML=sorted.map((date,i)=>{
+    const d=new Date(date);
+    const label=d.toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+    return`<div class="detail-hist-row">
+      <div class="detail-hist-date">${label}</div>
+      <button class="detail-hist-del" onclick="deleteDetailPurchase('${date}')">✕</button>
+    </div>`;
+  }).join('');
+}
+
+async function addDetailPurchase(){
+  const item=data.find(d=>d.id===detailItemId);if(!item)return;
+  const date=document.getElementById('detail-add-date').value;
+  if(!date){showToast('⚠ 日付を選択してください');return;}
+  item.purchases.push(date);
+  await saveItem(item);save();
+  renderDetailHistory(item);
+  renderItems();
+  showToast('✓ 購入履歴を追加しました');
+}
+
+async function deleteDetailPurchase(date){
+  const item=data.find(d=>d.id===detailItemId);if(!item)return;
+  item.purchases=item.purchases.filter(p=>p!==date);
+  await saveItem(item);save();
+  renderDetailHistory(item);
+  renderItems();
+  showToast('履歴を削除しました');
+}
+
+function closeDetail(){
+  document.getElementById('overlay-detail').classList.remove('open');
+  document.getElementById('sheet-detail').classList.remove('open');
+}
+
 function openHistory(){
   const entries=[];
   data.forEach(item=>[...item.purchases].sort().reverse().forEach(date=>entries.push({name:item.name,cat:item.cat,date})));
