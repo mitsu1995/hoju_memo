@@ -165,6 +165,8 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .key-status.set{color:var(--safe);}
 .key-status.unset{color:var(--text3);}
 .danger-btn{width:100%;padding:12px;border-radius:var(--radius-sm);border:1px solid var(--danger);background:none;color:var(--danger);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;}
+.demo-banner{background:#2c2a27;color:#f0ede6;font-size:12px;text-align:center;padding:10px 16px;line-height:1.6;position:sticky;top:0;z-index:200;}
+.demo-banner a{color:#febc2b;text-decoration:none;}
 
 /* Detail sheet */
 .detail-stat{background:var(--bg2);border-radius:var(--radius-sm);padding:10px;text-align:center;}
@@ -233,6 +235,10 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 </style>
 </head>
 <body>
+<div class="demo-banner">
+  📖 これはnote記事用のデモページです。データの追加・削除はご遠慮ください。<br>
+  コードの詳細・再現方法は <a href="https://note.com/garubanzo" target="_blank">こちらのnote記事</a> をご覧ください。
+</div>
 <div class="app">
   <div class="topbar">
     <div class="topbar-inner">
@@ -546,7 +552,8 @@ function updateOcrHint(){
 // ===== SUPABASE =====
 const SUPABASE_URL='https://ekmcyybjdiqjxvhebibt.supabase.co';
 const SUPABASE_KEY='sb_publishable_q2a6PJx9Y3s0zsbGbAwseQ_y9z6Xd0N';
-const USER_ID='shared'; // 家族で共有する固定ID
+const USER_ID='demo'; // デモ用
+const IS_DEMO=true;
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 // ===== DATA =====
@@ -570,7 +577,22 @@ async function loadData(){
     showToast('✓ データを読み込みました');
   }
   await loadMemoItems();
+  if(IS_DEMO&&data.length===0)await seedDemoData();
   renderChips();renderItems();
+}
+
+async function seedDemoData(){
+  const ago=n=>{const d=new Date();d.setDate(d.getDate()-n);return d.toISOString().split('T')[0];};
+  const samples=[
+    {_isNew:true,name:'シャンプー',cat:'日用品',purchases:[ago(50),ago(10)],note:'',stock:0,img:'emoji:🧴'},
+    {_isNew:true,name:'醤油',cat:'調味料',purchases:[ago(90),ago(45),ago(5)],note:'大容量',stock:1,img:'emoji:🫙'},
+    {_isNew:true,name:'洗濯洗剤',cat:'日用品',purchases:[ago(60),ago(30)],note:'',stock:2,img:'emoji:🧹'},
+    {_isNew:true,name:'トイレットペーパー',cat:'日用品',purchases:[ago(40),ago(20),ago(2)],note:'12ロール',stock:3,img:'emoji:🧻'},
+    {_isNew:true,name:'みりん',cat:'調味料',purchases:[ago(120),ago(65)],note:'',stock:0,img:'emoji:🍶'},
+    {_isNew:true,name:'ボディソープ',cat:'日用品',purchases:[ago(35),ago(7)],note:'',stock:1,img:'emoji:🚿'},
+  ];
+  for(const item of samples){const inserted=await saveItem(item);if(inserted)data.push(inserted);}
+  save();
 }
 
 async function save(){
@@ -948,6 +970,7 @@ function openAdd(){
 function closeAdd(){document.getElementById('overlay-add').classList.remove('open');document.getElementById('sheet-add').classList.remove('open');}
 
 async function recordPurchase(){
+  if(IS_DEMO){showToast('⚠ デモ版のため登録できません');closeAdd();return;}
   const name=document.getElementById('f-name').value.trim();
   const date=document.getElementById('f-date').value;
   const cat=document.getElementById('f-cat').value;
