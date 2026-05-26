@@ -29,7 +29,7 @@
 }}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;max-width:430px;margin:0 auto;overscroll-behavior:none;font-weight:400;}
-.app{display:flex;flex-direction:column;height:100dvh;}
+.app{display:flex;flex-direction:column;height:100dvh;position:fixed;width:100%;max-width:430px;}
 .topbar{position:sticky;top:0;z-index:100;padding:calc(var(--safe-top) + 16px) 20px 12px;border-bottom:1px solid var(--border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:color-mix(in srgb,var(--bg) 88%,transparent);}
 .topbar-inner{display:flex;align-items:center;justify-content:space-between;}
 .topbar h1{font-size:22px;font-weight:400;letter-spacing:-0.5px;}
@@ -38,7 +38,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .icon-btn{width:38px;height:38px;border-radius:50%;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:transform 0.15s;}
 .icon-btn:active{transform:scale(0.92);}
 .icon-btn.shop-mode-active{background:var(--accent);border-color:var(--accent);font-size:16px;}
-.content{flex:1;padding:16px 16px calc(80px + var(--safe-bottom));overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;}
+.content{flex:1;padding:16px 16px calc(80px + var(--safe-bottom));overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
 .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;}
 .sum-card{border-radius:var(--radius-sm);padding:10px 12px;border:none;text-align:center;}
 .sum-num{font-size:22px;font-weight:400;color:#2c2a27;}
@@ -862,7 +862,7 @@ function showCtxMenuTouch(id){
   showCtxAt(rect.right-20,rect.top+20,id);
 }
 function showCtxAt(x,y,id){
-  const item=data.find(d=>d.id===id);if(!item)return;
+  const item=data.find(d=>d.id==id);if(!item)return;
   const menu=document.getElementById('ctx-menu');
   menu.innerHTML=`
     <div class="ctx-item" onclick="editItem(${id});closeCtxMenu()">✏️ 編集</div>
@@ -882,7 +882,7 @@ function closeCtxMenu(){
 
 // ===== DELETE =====
 function deleteItemConfirm(id){
-  const item=data.find(d=>d.id===id);if(!item)return;
+  const item=data.find(d=>d.id==id);if(!item)return;
   showDialog(
     `「${item.name}」を削除`,
     'このアイテムと購入履歴がすべて削除されます。元に戻せません。',
@@ -893,7 +893,7 @@ function deleteItemConfirm(id){
 
 // ===== EDIT =====
 async function editItem(id){
-  const item=data.find(d=>d.id===id);if(!item)return;
+  const item=data.find(d=>d.id==id);if(!item)return;
   document.getElementById('f-name').value=item.name;
   document.getElementById('f-cat').value=item.cat;
   document.getElementById('f-note').value=item.note||'';
@@ -914,18 +914,18 @@ function setFilter(cat){activeFilter=cat;renderChips();renderItems();}
 
 // ===== STOCK =====
 async function changeStock(id,delta){
-  const item=data.find(d=>d.id===id);if(!item)return;
+  const item=data.find(d=>d.id==id);if(!item)return;
   item.stock=Math.max(0,(item.stock??0)+delta);
   await saveItem(item);save();renderItems();
   showToast(delta>0?`✓ ストック +1（×${item.stock}個）`:`ストック -1（×${item.stock}個）`);
 }
 async function useOne(id){
-  const item=data.find(d=>d.id===id);if(!item)return;
+  const item=data.find(d=>d.id==id);if(!item)return;
   if((item.stock??0)>1){item.stock--;await saveItem(item);save();renderItems();showToast(`📦 開封！残りストック ×${item.stock}個`);}
   else{item.stock=0;await saveItem(item);save();renderItems();showToast(`🔴 使い切り！補充を検討してください`);}
 }
 async function quickBuy(id){
-  const item=data.find(d=>d.id===id);if(!item)return;
+  const item=data.find(d=>d.id==id);if(!item)return;
   item.purchases.push(today.toISOString().split('T')[0]);
   item.stock=(item.stock??0)+1;
   await saveItem(item);save();renderItems();
@@ -1051,7 +1051,7 @@ async function applyImage(src){
     ? `<span style="font-size:48px">${src.slice(6)}</span>`
     : `<img src="${src}" alt="preview" style="width:100%;height:100%;object-fit:cover">`;
   if(editingImgId){
-    const item=data.find(d=>d.id===editingImgId);
+    const item=data.find(d=>d.id==editingImgId);
     if(item){item.img=src;await saveItem(item);save();renderItems();}
     closeImgSheet();showToast(isEmoji?'✓ 絵文字を設定しました':'✓ 画像を更新しました');
   } else {
@@ -1232,8 +1232,8 @@ async function registerOcrItems(){
 let detailItemId=null;
 
 function openDetail(id){
-  const item=data.find(d=>d.id===id);if(!item)return;
-  detailItemId=id;
+  const item=data.find(d=>d.id==id);if(!item)return;
+  detailItemId=item.id;
   const{cycle,since,progress,status,stock}=calcItem(item);
   const emoji=item.img?(item.img.startsWith('emoji:')?item.img.slice(6):'🖼️'):catEmoji(item.cat);
   document.getElementById('detail-emoji').textContent=emoji;
@@ -1352,6 +1352,16 @@ function showToast(msg){
 function setView(v){}
 
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+// iOS keyboard viewport fix
+if(/iPhone|iPad/.test(navigator.userAgent)){
+  const app=document.querySelector('.app');
+  const setH=()=>{app.style.height=window.innerHeight+'px';};
+  setH();
+  window.addEventListener('resize',setH);
+  window.addEventListener('focusin',()=>setTimeout(setH,300));
+  window.addEventListener('focusout',()=>setTimeout(setH,300));
+}
 loadData();
 </script>
 </body>
