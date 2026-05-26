@@ -29,7 +29,7 @@
 }}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;max-width:430px;margin:0 auto;overscroll-behavior:none;font-weight:400;}
-.app{display:flex;flex-direction:column;height:100dvh;position:fixed;width:100%;max-width:430px;}
+.app{display:flex;flex-direction:column;height:100dvh;position:fixed;width:100%;max-width:430px;left:50%;transform:translateX(-50%);}
 .topbar{position:sticky;top:0;z-index:100;padding:calc(var(--safe-top) + 16px) 20px 12px;border-bottom:1px solid var(--border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:color-mix(in srgb,var(--bg) 88%,transparent);}
 .topbar-inner{display:flex;align-items:center;justify-content:space-between;}
 .topbar h1{font-size:22px;font-weight:400;letter-spacing:-0.5px;}
@@ -187,7 +187,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .shop-memo-area{padding:0 0 12px;width:100%;overflow:hidden;}
 .shop-memo-area{padding:0 0 12px;width:100%;}
 .shop-memo-input-wrap{position:relative;margin-bottom:10px;}
-.shop-memo-input-wrap input{width:100%;padding:12px 56px 12px 18px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:15px;font-family:inherit;outline:none;-webkit-appearance:none;box-sizing:border-box;}
+.shop-memo-input-wrap input{width:100%;padding:12px 56px 12px 18px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:16px;font-family:inherit;outline:none;-webkit-appearance:none;box-sizing:border-box;}
 .shop-memo-input-wrap input:focus{border-color:var(--accent);}
 .shop-memo-add-btn{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;background:#febc2b;border:none;font-size:20px;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;line-height:1;}
 .shop-section-label{font-size:11px;color:var(--text3);font-weight:400;margin:12px 0 6px;padding:0 2px;letter-spacing:0.03em;}
@@ -1353,14 +1353,18 @@ function setView(v){}
 
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 
-// iOS keyboard viewport fix
-if(/iPhone|iPad/.test(navigator.userAgent)){
+// iOS keyboard viewport fix using visualViewport API
+if(window.visualViewport){
   const app=document.querySelector('.app');
-  const setH=()=>{app.style.height=window.innerHeight+'px';};
-  setH();
-  window.addEventListener('resize',setH);
-  window.addEventListener('focusin',()=>setTimeout(setH,300));
-  window.addEventListener('focusout',()=>setTimeout(setH,300));
+  const content=document.querySelector('.content');
+  const bottomnav=document.querySelector('.bottomnav');
+  const onViewportChange=()=>{
+    const vv=window.visualViewport;
+    app.style.height=vv.height+'px';
+    app.style.top=vv.offsetTop+'px';
+  };
+  window.visualViewport.addEventListener('resize',onViewportChange);
+  window.visualViewport.addEventListener('scroll',onViewportChange);
 }
 loadData();
 </script>
