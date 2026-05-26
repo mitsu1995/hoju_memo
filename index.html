@@ -744,18 +744,16 @@ function shareToLine(){
   const statusMark={now:'🔴',soon:'🟡',ok:'🟢'};
   let lines=[];
   if(needItems.length){
-    lines.push('📦 補充リスト');
     needItems.forEach(item=>{
-      const{status,stock}=calcItem(item);
-      lines.push(statusMark[status]+' '+item.name+'（ストック×'+stock+'）');
+      const{stock}=calcItem(item);
+      lines.push('・'+item.name+'（ストック×'+stock+'）');
     });
   }
   if(pendingMemos.length){
-    if(lines.length)lines.push('');
-    lines.push('✏️ 今日だけ買うもの');
+    if(lines.length)lines.push('---');
     pendingMemos.forEach(m=>lines.push('・'+m.name));
   }
-  const text='🛒 かいものメモ\n'+lines.join('\n')+'\n\nhttps://mitsu1995.github.io/hoju_memo/';
+  const text='🛒かいものメモ\n\n'+lines.join('\n')+'\n\nhttps://mitsu1995.github.io/hoju_memo/';
   const url='https://line.me/R/msg/text/?'+encodeURIComponent(text);
   window.open(url,'_blank');
 }
